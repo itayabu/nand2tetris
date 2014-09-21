@@ -1,0 +1,19 @@
+
+
+CHIP CheckOutput
+{
+IN in[16];
+
+OUT zr, ng;
+
+PARTS:
+ Or8Way(in=in[0..7], out=zero1);
+ Or8Way(in=in[8..15], out=zero2);
+ Or(a=zero1, b=zero2, out=notZr);
+ Not(in=notZr, out=zr);
+ 
+ Not(in=in[15], out=notIsNeg);
+ Not(in=notIsNeg, out=ng);
+ 
+ }
+ 
