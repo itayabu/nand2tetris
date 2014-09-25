@@ -1,4 +1,5 @@
 D = M;0
 0;JMP
-@bla
+@KBD
+
 bye

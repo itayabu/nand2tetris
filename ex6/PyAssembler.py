@@ -30,6 +30,7 @@ def main():
 
     ##line = inputfile.readline()
 
-
+    outputfile = open(name+'.hack','w')
+    outputfile.write("hello\n")
 if __name__ == "__main__":
     main()

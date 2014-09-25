@@ -2,12 +2,12 @@ __author__ = 'Gil'
 
 class Parser:
 
-
     def __init__(self, file):
         self.file = file
         self.lineCount = 0
-        self.lines = self.file.readlines()
-        self.lines = [line.replace('\n', '') for line in self.lines]
+        self.lines = self.file.readlines() #split lines
+        self.lines = [line.replace('\n', '') for line in self.lines] #removes '\n'
+        self.lines = [line for line in self.lines if line != ''] #removes enpty lines
         self.currCommand = self.lines[self.lineCount]
 
     """
