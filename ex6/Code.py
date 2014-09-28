@@ -3,8 +3,8 @@ __author__ = 'Gil'
 
 class Code:
 
-    destCodes = {'': '000', 'M': '001', 'D': '010', 'MD': '011',
-                 'A': '100', 'AM': '101', 'AD': '110', 'AMD': '111'}
+    destCodes = {'0': '000', 'M': '001', 'D': '010', 'MD': '011',
+                 'A': '100', 'AM': '101', 'AD': '110', 'AMD': '111', None:'000'}
 
     def dest(self, mnemonic):
         return self.destCodes.get(mnemonic)
@@ -22,7 +22,7 @@ class Code:
                  'M':'1110000',  '':'xxxxxxx',   '!M':'1110001', '':'xxxxxxx',
                  '-M':'1110011', '':'xxxxxxx',   'M+1':'1110111','':'xxxxxxx',
                  'M-1':'1110010','D+M':'1000010','D-M':'1010011','M-D':'1000111',
-                 'D&M':'1000000', 'D|M':'1010101' }
+                 'D&M':'1000000', 'D|M':'1010101'}
     def comp(self, mnemonic):
         return self.compCodes.get(mnemonic)
         """
@@ -30,7 +30,7 @@ class Code:
     comp mnemonic.
     """
 
-    jumpCodes = {'': '000', 'JGT': '001', 'JEQ': '010', 'JGE': '011',
+    jumpCodes = {None: '000', 'JGT': '001', 'JEQ': '010', 'JGE': '011',
                  'JLT': '100', 'JNE': '101', 'JLE': '110', 'JMP': '111'}
     def jump(self, mnemonic):
         return self.jumpCodes.get(mnemonic)
@@ -38,3 +38,10 @@ class Code:
     Returns the binary code of the
     jump mnemonic.
     """
+
+    def binary(self, decNum):
+        binNum = bin(int(decNum))[2:]
+        length = 16 - len(binNum)
+        for i in range(length):
+            binNum = "0" + binNum
+        return binNum

@@ -1,5 +1,6 @@
 D = M;0
-0;JMP
+\\ test1
+0;JMP \\test2
 @KBD
 
 bye
