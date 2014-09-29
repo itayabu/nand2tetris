@@ -14,7 +14,8 @@ class Parser:
         self.currCommand = ""
         self.lines = self.file.readlines() # split lines
         self.lines = [line.replace('\n', '') for line in self.lines] # removes '\n'
-        self.lines = [self.relevantLine(line, "", "//").replace(" ", "") for line in self.lines] # removes '//'
+        self.lines = [line for line in self.lines if "//" not in line]
+        # self.lines = [self.relevantLine(line, "", "//").replace(" ", "") for line in self.lines] # removes '//'
         # and spaces
         self.lines = [line for line in self.lines if line != ''] # removes empty lines
 
