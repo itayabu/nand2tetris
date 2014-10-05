@@ -6,7 +6,8 @@ class CodeWriter:
         Opens the output file/stream and gets ready to write into it.
         """
         self.file = open(file, 'w')
-        self.counter = 0
+        self.compareCounter = 0
+        self.functionCounter = 0
 
     def setFileName(self, fileName):
         """
@@ -37,7 +38,7 @@ class CodeWriter:
         return commandStr
 
     def compareOp(self, command):
-        self.counter +=1
+        self.compareCounter +=1
         commandStr = "@SP\n" + \
                      "M = M - 1\n" \
                      "A = M\n" + \
@@ -46,22 +47,23 @@ class CodeWriter:
                      "M = M - 1\n" \
                      "A = M\n" + \
                      "D = M - D\n" + \
-                     "@CORRECT" + str(self.counter) + "\n" + \
+                     "@CORRECT" + str(self.compareCounter) + "\n" + \
                      "D;J"+ command.upper() + "\n" + \
                      "D = 0\n" + \
-                     "@AFTER" + str(self.counter) + "\n" + \
+                     "@AFTER" + str(self.compareCounter) + "\n" + \
                      "0;JMP\n" + \
-                     "(CORRECT" + str(self.counter) + ")\n" + \
+                     "(CORRECT" + str(self.compareCounter) + ")\n" + \
                      "D = -1\n" + \
-                     "@AFTER" + str(self.counter) + "\n" + \
+                     "@AFTER" + str(self.compareCounter) + "\n" + \
                      "0;JMP\n" + \
-                     "(AFTER" + str(self.counter) + ")\n" + \
+                     "(AFTER" + str(self.compareCounter) + ")\n" + \
                      "@SP\n" + \
                      "A = M\n" + \
                      "M = D\n" + \
                      "@SP\n" + \
                      "M = M + 1\n"
         return commandStr
+
 
     def writeArithmetic(self, command):
         """
@@ -180,33 +182,112 @@ class CodeWriter:
                      "@SP\n" + \
                      "M = D\n"
         commandStr += self.pushToStack("0") * 5
-        commandStr += "@Sys.init\n" + \
-                      "0;JMP"
-
         self.file.write(commandStr)
+        self.writeCall("Sys.init", "0")
+
 
     def writeLabel(self, label):
+
         """
         Writes the assembly code that is the  translation of the given label command.
         """
+        self.file.write("(" + label + ")\n")
+
     def writeGoto(self, label):
         """
         Writes the assembly code that is the translation of the given goto command.
         """
+        commandStr = "@" + label + "\n" + \
+                     "0;JMP\n"
+        self.file.write(commandStr)
 
     def writeIf(self, label):
         """
         Writes the assembly code that is the translation of the given if-goto command
         """
+        commandStr = "@SP\n" + \
+                     "M = M - 1\n" + \
+                     "A = M\n" + \
+                     "D = M\n" + \
+                     "@" + label + "\n" + \
+                     "D;JNE\n"
+
+        self.file.write(commandStr)
+
+    def savePointers(self, pointer):
+        commandStr = "@" + pointer + "\n" + \
+                     "D = M\n" + \
+                     self.pushToStack("D")
+        return commandStr
+
     def writeCall(self, functionName, numArgs):
         """
         Writes the assembly code that is the translation of the given Call command.
         """
+        self.functionCounter += 1
+        commandStr = "@RETURN" + str(self.functionCounter) + "\n" + \
+                     "D = A\n"
+        # self.file.write(commandStr)
+        commandStr += self.pushToStack("D")
+        commandStr += self.savePointers("LCL")
+        commandStr += self.savePointers("ARG")
+        commandStr += self.savePointers("THIS")
+        commandStr += self.savePointers("THAT")
+        commandStr += "@SP\n" + \
+                     "D = M\n" + \
+                     "@" + str(int(numArgs) + int(5)) + "\n" + \
+                     "D = D - A\n" + \
+                     "@ARG\n" + \
+                     "M = D\n" + \
+                     "@SP\n" + \
+                     "D = M\n" + \
+                     "@LCL\n" + \
+                     "M = D\n"
+        self.file.write(commandStr)
+        self.writeGoto(functionName)
+        self.writeLabel("RETURN" + str(self.functionCounter))
+
+    def restorePointers(self, pointer):
+        commandStr = "@R14\n" + \
+                     "M = M - 1\n" + \
+                     "A = M\n" + \
+                     "D = M\n" + \
+                     "@" + pointer + "\n" + \
+                     "M = D\n"
+        return commandStr
+
     def writeReturn(self):
         """
         Writes the assembly code that is the translation of the given Return command.
         """
+        commandStr = "@LCL\n" + \
+                     "D = M\n" + \
+                     "@R14\n" + \
+                     "M = D\n" + \
+                     "@5\n" + \
+                     "D = A\n" + \
+                     "@R14\n" + \
+                     "D = M - D\n" + \
+                     "@R15\n" + \
+                     "M = D\n"
+        commandStr += self.popFromStack("argument", '0') + \
+        self.restorePointers("THAT") +\
+        self.restorePointers("THIS") +\
+        self.restorePointers("ARG") + \
+        self.restorePointers("LCL")
+        commandStr += "@R15\n" + \
+                      "D = M\n" + \
+                      "@SP\n" + \
+                      "M = D - 1\n" + \
+                      "@R15\n" + \
+                      "A = M\n" + \
+                      "0;JMP\n"
+        self.file.write(commandStr)
+
     def writeFunction(self, functionName, numLocals):
         """
         Writes the assembly code that is the trans. of the given Function command.
         """
+        self.writeLabel(functionName)
+        for i in range(int(numLocals)):
+            self.file.write(self.pushToStack("0"))
