@@ -6,6 +6,7 @@ class CodeWriter:
         Opens the output file/stream and gets ready to write into it.
         """
         self.file = open(file, 'w')
+        self.name = ''
         self.compareCounter = 0
         self.functionCounter = 0
 
@@ -13,7 +14,8 @@ class CodeWriter:
         """
         Informs the code writer that the translation of a new VM file is started.
         """
-        print ("start translating file: " + fileName)
+        self.name = fileName
+        print("start translating file: " + fileName)
 
     def unaryOp(self, operation):
         commandStr = "@SP\n" + \
@@ -149,15 +151,15 @@ class CodeWriter:
                              self.pushToStack("D")
 
             elif segment == "static":
-                commandStr = "@"+self.file.name.split(".")[0] + "." + index + "\n" + \
-                             "D = M" + \
+                commandStr = "@"+self.name.split(".")[0] + "." + index + "\n" + \
+                             "D = M\n" + \
                              self.pushToStack("D")
         else: # pop
             if segment == "static":
                 commandStr = "@SP\n" + \
-                             "A = M\n" + \
+                             "A = M - 1\n" + \
                              "D = M\n" + \
-                             "@"+self.file.name.split(".")[0] + "." + index + "\n" + \
+                             "@"+self.name.split(".")[0] + "." + index + "\n" + \
                              "M = D\n" + \
                              "@SP\n" + \
                              "M = M - 1\n"
@@ -181,7 +183,6 @@ class CodeWriter:
                      "D = A\n" + \
                      "@SP\n" + \
                      "M = D\n"
-        commandStr += self.pushToStack("0") * 5
         self.file.write(commandStr)
         self.writeCall("Sys.init", "0")
 
@@ -227,7 +228,6 @@ class CodeWriter:
         self.functionCounter += 1
         commandStr = "@RETURN" + str(self.functionCounter) + "\n" + \
                      "D = A\n"
-        # self.file.write(commandStr)
         commandStr += self.pushToStack("D")
         commandStr += self.savePointers("LCL")
         commandStr += self.savePointers("ARG")
@@ -268,20 +268,22 @@ class CodeWriter:
                      "D = A\n" + \
                      "@R14\n" + \
                      "D = M - D\n" + \
+                     "A = D\n" + \
+                     "D = M\n" + \
                      "@R15\n" + \
-                     "M = D\n"
-        commandStr += self.popFromStack("argument", '0') + \
-        self.restorePointers("THAT") +\
-        self.restorePointers("THIS") +\
-        self.restorePointers("ARG") + \
-        self.restorePointers("LCL")
-        commandStr += "@R15\n" + \
-                      "D = M\n" + \
-                      "@SP\n" + \
-                      "M = D - 1\n" + \
-                      "@R15\n" + \
-                      "A = M\n" + \
-                      "0;JMP\n"
+                     "M = D\n" + \
+                     self.popFromStack("argument", '0') + \
+                     "@ARG\n" + \
+                     "D = M\n" + \
+                     "@SP\n" + \
+                     "M = D + 1\n" + \
+                     self.restorePointers("THAT") +\
+                     self.restorePointers("THIS") +\
+                     self.restorePointers("ARG") + \
+                     self.restorePointers("LCL") + \
+                     "@R15\n" + \
+                     "A = M\n" + \
+                     "0;JMP\n"
         self.file.write(commandStr)
 
     def writeFunction(self, functionName, numLocals):
@@ -291,3 +293,7 @@ class CodeWriter:
         self.writeLabel(functionName)
         for i in range(int(numLocals)):
             self.file.write(self.pushToStack("0"))
+                    # "@R15\n" + \
+                     # "D = M\n" + \
+                     # "@SP\n" + \
+                     # "M = D\n" + \

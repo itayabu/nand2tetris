@@ -42,7 +42,7 @@ def main(argv):
     else:
         outputFile = input.split('.')[0] + ".asm"
         code = CodeWriter.CodeWriter(outputFile)
-        code.writeInit()
+        code.setFileName(input)
         translateFile(input, code)
 
 if __name__ == "__main__":
