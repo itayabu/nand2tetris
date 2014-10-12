@@ -1,0 +1,39 @@
+class Food {
+
+    // Location on the screen
+    field int x, y;
+
+    // The radius of the square
+    field int radius;
+
+    /** Constructs a new food with a given location and radius. */
+    constructor Food new(int newX, int newY) {
+        let x = newX;
+        let y = newY;
+		let radius = 10;
+
+        do draw();
+
+        return this;
+    }
+
+    /** Deallocates the object's memory. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Draws the square on the screen. */
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawCircle(x, y, radius);
+        return;
+    }
+
+    /** Erases the square from the screen. */
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y, radius);
+        return;
+    }
+}

@@ -1,0 +1,77 @@
+class Game {
+
+    // The square
+    field Snake snake;
+
+    // The square's movement direction
+    field int direction; // 0=none,1=up,2=down,3=left,4=right
+	
+	field boolean isAlive;
+
+    /** Constructs a new Square Game. */
+    constructor Game new() {
+        let snake = Snake.new();
+        let direction = 4;
+		let isAlive = true;
+        return this;
+    }
+
+    /** Deallocates the object's memory. */
+    method void dispose() {
+        do snake.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Starts the game. Handles inputs from the user that control
+     *  the square's movement, direction and size. */
+    method void run() {
+        var char key;
+        
+        while (isAlive) {
+            // waits for a key to be pressed.
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+                do moveSnake();
+            }
+
+            if (key = 81) {
+                let isAlive = false;
+            }
+            if (key = 131) {
+                let direction = 1;
+            }
+            if (key = 133) {
+                let direction = 2;
+            }
+            if (key = 130) {
+                let direction = 3;
+            }
+            if (key = 132) {
+                let direction = 4;
+            }
+
+            // waits for the key to be released.
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+                do moveSnake();
+            }
+        }
+            
+        return;
+	}
+
+    /** Moves the square by 2 pixels in the current direction. */
+    method void moveSnake() {
+        let isAlive = snake.advanceHead(direction);
+		//if (~(eatFood())){
+		if (isAlive) {
+			do snake.deleteTail();
+		}
+
+        do Sys.wait(100); // Delays the next movement.
+        return;
+    }
+	
+	
+}

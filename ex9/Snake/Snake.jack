@@ -1,0 +1,94 @@
+class Snake {
+	field Block head, middle, tail;
+	
+	field int size, rowEnd, colEnd;
+	
+	constructor Snake new() {
+		let head = Block.new(63, 0, null);
+		let middle = Block.new(31, 0, head);
+		let tail = Block.new(0, 0, middle);
+		do head.draw();
+		do middle.draw();
+		do tail.draw();
+		let size = 32;
+		let rowEnd = 256;
+		let colEnd = 512;
+		return this;
+		}
+	
+	/** Deallocates the object's memory. */
+    method void dispose() {
+		var Block temp;
+		while (~(tail.getNext() = null)) {
+			let temp = tail;
+			let tail = tail.getNext();
+			do temp.dispose();
+		}
+        do Memory.deAlloc(this);
+        return;
+    }
+	
+	/** Draws the square on the screen. */
+    method boolean advanceHead(int direction) {
+        var Block newBlock;
+		// 0=none,1=up,2=down,3=left,4=right
+		if (direction = 1) {
+			if (~(isLegal(head.getX(), head.getY() - size))){
+				return false;
+			}
+			let newBlock = Block.new(head.getX(), head.getY() - size, null);
+		}
+		if (direction = 2) {
+			if (~(isLegal(head.getX(), head.getY() + size))){
+				return false;
+			}
+			let newBlock = Block.new(head.getX(), head.getY() + size, null);
+		}
+		if (direction = 3) {
+			if (~(isLegal(head.getX() - size, head.getY()))){
+				return false;
+			}
+			let newBlock = Block.new(head.getX() - size, head.getY(), null);
+		}
+		if (direction = 4) {
+			if (~(isLegal(head.getX() + size, head.getY()))){
+				do Screen.drawRectangle(100, 100, 120, 120);
+				return false;
+			}
+			let newBlock = Block.new(head.getX() + size, head.getY(), null);
+		}
+		do head.setNext(newBlock);
+		let head = newBlock;
+		do newBlock.draw();
+        return true;
+    }
+	
+	method void deleteTail(){
+		var Block temp;
+		let temp = tail;
+		let tail = tail.getNext();
+		do temp.erase();
+		do temp.dispose();
+		return;
+	}
+	
+	method boolean isLegal(int newX, int newY){
+		var Block temp;
+		let temp = tail.getNext();
+		while (~(temp = head)){
+			if (temp.getX() = newX & temp.getY() = newY){
+				return false;
+			}
+			let temp = temp.getNext();
+		}
+		if (newX < 0 | newX > colEnd | newY < 0 | newY > rowEnd){
+			return false;
+		}
+		return true;
+	}
+}	
+
+	
+	
+
+		
