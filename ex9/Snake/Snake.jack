@@ -4,15 +4,15 @@ class Snake {
 	field int size, rowEnd, colEnd;
 	
 	constructor Snake new() {
-		let head = Block.new(63, 0, null);
-		let middle = Block.new(31, 0, head);
+		let head = Block.new(64, 0, null);
+		let middle = Block.new(32, 0, head);
 		let tail = Block.new(0, 0, middle);
 		do head.draw();
 		do middle.draw();
 		do tail.draw();
 		let size = 32;
-		let rowEnd = 256;
-		let colEnd = 512;
+		let rowEnd = 255;
+		let colEnd = 511;
 		return this;
 		}
 	
@@ -31,35 +31,34 @@ class Snake {
 	/** Draws the square on the screen. */
     method boolean advanceHead(int direction) {
         var Block newBlock;
-		// 0=none,1=up,2=down,3=left,4=right
+		// 1=up,2=down,3=left,4=right
 		if (direction = 1) {
-			if (~(isLegal(head.getX(), head.getY() - size))){
+			if (~(isLegal(head.getX(), (head.getY() - size)))){
 				return false;
 			}
-			let newBlock = Block.new(head.getX(), head.getY() - size, null);
+			let newBlock = Block.new(head.getX(), (head.getY() - size), null);
 		}
 		if (direction = 2) {
-			if (~(isLegal(head.getX(), head.getY() + size))){
+			if (~(isLegal(head.getX(), (head.getY() + size)))){
 				return false;
 			}
-			let newBlock = Block.new(head.getX(), head.getY() + size, null);
+			let newBlock = Block.new(head.getX(), (head.getY() + size), null);
 		}
 		if (direction = 3) {
-			if (~(isLegal(head.getX() - size, head.getY()))){
+			if (~(isLegal((head.getX() - size), head.getY()))){
 				return false;
 			}
-			let newBlock = Block.new(head.getX() - size, head.getY(), null);
+			let newBlock = Block.new((head.getX() - size), head.getY(), null);
 		}
 		if (direction = 4) {
-			if (~(isLegal(head.getX() + size, head.getY()))){
-				do Screen.drawRectangle(100, 100, 120, 120);
+			if (~(isLegal((head.getX() + size), head.getY()))){
 				return false;
 			}
-			let newBlock = Block.new(head.getX() + size, head.getY(), null);
+			let newBlock = Block.new((head.getX() + size), head.getY(), null);
 		}
 		do head.setNext(newBlock);
 		let head = newBlock;
-		do newBlock.draw();
+		do head.draw();
         return true;
     }
 	
@@ -76,12 +75,12 @@ class Snake {
 		var Block temp;
 		let temp = tail.getNext();
 		while (~(temp = head)){
-			if (temp.getX() = newX & temp.getY() = newY){
+			if ((temp.getX() = newX) & (temp.getY() = newY)){
 				return false;
 			}
 			let temp = temp.getNext();
 		}
-		if (newX < 0 | newX > colEnd | newY < 0 | newY > rowEnd){
+		if ((newX < 0) | (newX > colEnd) | (newY < 0) | (newY > rowEnd)){
 			return false;
 		}
 		return true;

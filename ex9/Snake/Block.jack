@@ -23,7 +23,7 @@ class Block {
         let x = newX;
         let y = newY;
 		let next = newNext;
-		let size = 32;
+		let size = 31;
         return this;
     }
 
@@ -36,14 +36,14 @@ class Block {
     /** Draws the square on the screen. */
     method void draw() {
         do Screen.setColor(true);
-        do Screen.drawRectangle(x, y, x + size, y + size);
+        do Screen.drawRectangle(x, y, (x + size), (y + size));
         return;
     }
 
     /** Erases the square from the screen. */
     method void erase() {
         do Screen.setColor(false);
-        do Screen.drawRectangle(x, y, x + size, y + size);
+        do Screen.drawRectangle(x, y, (x + size), (y + size));
         return;
     }
 	
@@ -64,54 +64,4 @@ class Block {
 	method Block getNext() {
 		return next;
 	}
-		
-	/////////////////////////////////////////////////////
-	
-    /** Moves up by 2 pixels. */
-    method void moveUp() {
-        if (y > 1) {
-            do Screen.setColor(false);
-            do Screen.drawRectangle(x, (y + size) - 1, x + size, y + size);
-            let y = y - 2;
-            do Screen.setColor(true);
-            do Screen.drawRectangle(x, y, x + size, y + 1);
-        }
-        return;
-    }
-
-    /** Moves down by 2 pixels. */
-    method void moveDown() {
-        if ((y + size) < 254) {
-            do Screen.setColor(false);
-            do Screen.drawRectangle(x, y, x + size, y + 1);
-            let y = y + 2;
-            do Screen.setColor(true);
-            do Screen.drawRectangle(x, (y + size) - 1, x + size, y + size);
-        }
-        return;
-    }
-
-    /** Moves left by 2 pixels. */
-    method void moveLeft() {
-        if (x > 1) {
-            do Screen.setColor(false);
-            do Screen.drawRectangle((x + size) - 1, y, x + size, y + size);
-            let x = x - 2;
-            do Screen.setColor(true);
-            do Screen.drawRectangle(x, y, x + 1, y + size);
-        }
-        return;
-    }
-
-    /** Moves right by 2 pixels. */
-    method void moveRight() {
-        if ((x + size) < 510) {
-            do Screen.setColor(false);
-            do Screen.drawRectangle(x, y, x + 1, y + size);
-            let x = x + 2;
-            do Screen.setColor(true);
-            do Screen.drawRectangle((x + size) - 1, y, x + size, y + size);
-        }
-        return;
-    }
 }
