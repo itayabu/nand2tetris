@@ -85,6 +85,16 @@ class Snake {
 		}
 		return true;
 	}
+	
+	
+	/** Getters */
+	
+	method int getX() {
+		return head.getX();
+	}
+	method int getY() {
+		return head.getY();
+	}
 }	
 
 	

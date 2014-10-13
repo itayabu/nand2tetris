@@ -10,7 +10,7 @@ class Food {
     constructor Food new(int newX, int newY) {
         let x = newX;
         let y = newY;
-		let radius = 10;
+		let radius = 8;
 
         do draw();
 
@@ -26,14 +26,30 @@ class Food {
     /** Draws the square on the screen. */
     method void draw() {
         do Screen.setColor(true);
-        do Screen.drawCircle(x, y, radius);
+        do Screen.drawCircle((x + 15), (y + 15), radius);
         return;
     }
 
     /** Erases the square from the screen. */
     method void erase() {
         do Screen.setColor(false);
-        do Screen.drawCircle(x, y, radius);
+        do Screen.drawCircle((x + 15), (y + 15), radius);
         return;
     }
+	
+	method void generateNew(int newX, int newY) {
+		let x = newX;
+		let y = newY;
+		do draw();
+		return;
+	}
+	
+	/** Getters */
+	
+	method int getX() {
+		return x;
+	}
+	method int getY() {
+		return y;
+	}
 }
