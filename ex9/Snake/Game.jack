@@ -6,15 +6,16 @@ class Game {
 	// The food
 	field Food food;
 
-    // The square's movement direction
-    field int direction; // 0=none,1=up,2=down,3=left,4=right
+    // The snake's movement direction
+    field int direction; // 1=up, 2=down, 3=left, 4=right
 	
+	// check if snake is alive
 	field boolean isAlive;
 
     /** Constructs a new Square Game. */
     constructor Game new() {
+		let food = Food.new();
         let snake = Snake.new();
-		let food = Food.new(256, 32);
         let direction = 4;
 		let isAlive = true;
         return this;
@@ -23,7 +24,7 @@ class Game {
     /** Deallocates the object's memory. */
     method void dispose() {
         do snake.dispose();
-		do Food.dispose();
+		do food.dispose();
         do Memory.deAlloc(this);
         return;
     }
@@ -38,21 +39,24 @@ class Game {
             while (key = 0) {
                 let key = Keyboard.keyPressed();
                 do moveSnake();
+				if (~(isAlive)) {
+					return;
+				}
             }
 
             if (key = 81) {
                 let isAlive = false;
             }
-            if (key = 131) {
+            if ((key = 131) & (~(direction = 2))) {
                 let direction = 1;
             }
-            if (key = 133) {
+            if ((key = 133) & (~(direction = 1))) {
                 let direction = 2;
             }
-            if (key = 130) {
+            if ((key = 130) & (~(direction = 4))) {
                 let direction = 3;
             }
-            if (key = 132) {
+            if ((key = 132) & (~(direction = 3))) {
                 let direction = 4;
             }
 
@@ -60,16 +64,18 @@ class Game {
             while (~(key = 0)) {
                 let key = Keyboard.keyPressed();
                 do moveSnake();
+				if (~(isAlive)) {
+					return;
+				}
             }
         }
             
         return;
 	}
 
-    /** Moves the square by 2 pixels in the current direction. */
+    /** Moves the snake to the current direction. */
     method void moveSnake() {
         let isAlive = snake.advanceHead(direction);
-		//if (~(eatFood())){
 		if ((~(eatFood())) & isAlive) {
 			do snake.deleteTail();
 		}
@@ -80,10 +86,17 @@ class Game {
 	
 	method boolean eatFood() {
 		if (((snake.getX()) = food.getX()) & ((snake.getY()) = food.getY())) {
-			do food.generateNew(32, 192);
+			do food.generateNew();
+			while (~(snake.isFoodLegal(food.getX(), food.getY()))){
+				do food.generateNew();
+			}
+			do snake.increaseScore();
 			return true;
 		}
 		return false;
 	}
 	
+	method int getScore() {
+		return snake.getScore();
+	}
 }

@@ -1,7 +1,7 @@
 class Snake {
 	field Block head, middle, tail;
 	
-	field int size, rowEnd, colEnd;
+	field int size, rowEnd, colEnd, score;
 	
 	constructor Snake new() {
 		let head = Block.new(64, 0, null);
@@ -13,6 +13,7 @@ class Snake {
 		let size = 32;
 		let rowEnd = 255;
 		let colEnd = 511;
+		let score = 0;
 		return this;
 		}
 	
@@ -28,7 +29,7 @@ class Snake {
         return;
     }
 	
-	/** Draws the square on the screen. */
+	/** Advance the snake on the screen. */
     method boolean advanceHead(int direction) {
         var Block newBlock;
 		// 1=up,2=down,3=left,4=right
@@ -86,6 +87,22 @@ class Snake {
 		return true;
 	}
 	
+	method boolean isFoodLegal(int newX, int newY) {
+		var Block temp;
+		let temp = tail.getNext();
+		while (~(temp = null)){
+			if ((temp.getX() = newX) & (temp.getY() = newY)){
+				return false;
+			}
+			let temp = temp.getNext();
+		}
+		return true;
+	}
+	
+	method void increaseScore() {
+		let score = score + 10;
+		return;
+	}
 	
 	/** Getters */
 	
@@ -94,6 +111,9 @@ class Snake {
 	}
 	method int getY() {
 		return head.getY();
+	}
+	method int getScore() {
+		return score;
 	}
 }	
 

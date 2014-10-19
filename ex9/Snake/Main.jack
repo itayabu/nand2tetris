@@ -1,10 +1,5 @@
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/09/Square/Main.jack
-
 /**
- * The Main class initializes a new Square Dance game and starts it.
+ * The Main class initializes a new snake game and starts it.
  */
 class Main {
 
@@ -14,8 +9,19 @@ class Main {
 		
         let game = Game.new();
         do game.run();
+		do Main.endGame(game);
 		do game.dispose();
 
         return;
     }
+	
+	function void endGame(Game game) {
+		do Screen.clearScreen();
+        do Output.moveCursor(10,30);
+        do Output.printString("GAME OVER!");
+		do Output.moveCursor(12,30);
+        do Output.printString("SCORE: ");   
+        do Output.printInt(game.getScore());
+		return;
+	}
 }

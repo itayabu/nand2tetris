@@ -1,12 +1,6 @@
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/09/Square/Square.jack
-
 /**
- * Implements a graphic square. A graphic square has a screen location
- * and a size. It also has methods for drawing, erasing, moving on the 
- * screen, and changing its size.
+ * Implements a graphic Block. A graphic Block has a screen location
+ * and a size. It also has methods for drawing, erasing, moving on the screen
  */
 class Block {
 
@@ -23,7 +17,7 @@ class Block {
         let x = newX;
         let y = newY;
 		let next = newNext;
-		let size = 31;
+		let size = 30;
         return this;
     }
 

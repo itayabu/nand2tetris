@@ -1,25 +1,51 @@
 class Food {
 
     // Location on the screen
-    field int x, y;
+    field int x, y, randFactor;
 
-    // The radius of the square
+    // The radius of the food
     field int radius;
 
+	// Food X positions can be 0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, 480
+	// Food Y positions can be 0, 32, 64, 96, 128, 160, 192, 224
+	field Array foodIndex;
+	
     /** Constructs a new food with a given location and radius. */
-    constructor Food new(int newX, int newY) {
-        let x = newX;
-        let y = newY;
+    constructor Food new() {
+        let x = 3;
+        let y = 7;
+		let randFactor = 0;
 		let radius = 8;
+		//do draw();
 
-        do draw();
-
+		let foodIndex = Array.new(16);
+		let foodIndex[0] = 0;
+		let foodIndex[1] = 32;
+		let foodIndex[2] = 64;
+		let foodIndex[3] = 96;
+		let foodIndex[4] = 128;
+		let foodIndex[5] = 160;
+		let foodIndex[6] = 192;
+		let foodIndex[7] = 224;
+		let foodIndex[8] = 256;
+		let foodIndex[9] = 288;
+		let foodIndex[10] = 320;
+		let foodIndex[11] = 352;
+		let foodIndex[12] = 384;
+		let foodIndex[13] = 416;
+		let foodIndex[14] = 448;
+		let foodIndex[15] = 480;
+		
+		let x = foodIndex[Random.mod((x + 32749),16)];
+		let y = foodIndex[Random.mod((y + 32749),8)];
+		do draw();
         return this;
     }
 
     /** Deallocates the object's memory. */
     method void dispose() {
-        do Memory.deAlloc(this);
+        do foodIndex.dispose();
+		do Memory.deAlloc(this);
         return;
     }
 
@@ -37,9 +63,10 @@ class Food {
         return;
     }
 	
-	method void generateNew(int newX, int newY) {
-		let x = newX;
-		let y = newY;
+	method void generateNew() {
+		let x = foodIndex[Random.mod((x - randFactor + 32261),16)];
+		let y = foodIndex[Random.mod((y - randFactor + 32537),8)];
+		let randFactor = randFactor +10;
 		do draw();
 		return;
 	}
