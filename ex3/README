@@ -1,0 +1,25 @@
+itayabu, giltal1
+===============================================================================
+itay abulafia, ID 303033286, itay.abu@huji.ac.il
+Gil Tal, ID 30246979, gil.tal1@huji.ac.il
+===============================================================================
+
+                           Project 3 - Sequential chips
+                           ----------------------- 
+  
+
+Submitted Files
+---------------
+README - This file.
+Bit.hdl - 1-bit register.
+16-bit register.
+RAM8.hdl - Memory of 8 registers, each 16 bit-wide.
+RAM64.hdl - Memory of 64 registers, each 16 bit-wide.
+RAM512.hdl - Memory of 512 registers, each 16 bit-wide.
+RAM4K.hdl - Memory of 4K registers, each 16 bit-wide.
+RAM16K - Memory of 16K registers, each 16 bit-wide.
+PC.hdl - Process Counter, A 16-bit counter with load and reset control bits.
+
+Remarks
+-------
+

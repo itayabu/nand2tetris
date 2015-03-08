@@ -1,0 +1,25 @@
+itayabu, giltal1
+===============================================================================
+itay abulafia, ID 303033286, itay.abu@huji.ac.il
+Gil Tal, ID 30246979, gil.tal1@huji.ac.il
+===============================================================================
+
+                           Project 2 - Combinational chips
+                           ----------------------- 
+  
+
+Submitted Files
+---------------
+README - This file.
+Inc16.hdl - 6-bit incrementer: out = in + 1 (arithmetic addition)
+HalfAdder.hdl - Computes the sum of two bits.
+fullAdder.hdl - Computes the sum of three bits.
+Add16.hdl - Adds two 16-bit values.
+ShiftLef.hdl - multiply number by 2.
+ShiftRight.hdl - divide number by 2.
+Mul.hdl - multiply two numbers.
+ALU.hdl - complete Arithmetic Logic Unit.
+
+Remarks
+-------
+

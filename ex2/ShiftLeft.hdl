@@ -1,0 +1,27 @@
+/**
+ *multiply number by 2.
+ *each cell moves one spot to the left: out[i]=in[i-1]
+ *the least significant bit is zero
+ */
+CHIP ShiftLeft{
+     IN in[16];
+     OUT out[16];
+     
+     PARTS:
+	And(a=true, b=false, out=out[0]);
+	And(a=true, b=in[0], out=out[1]);
+	And(a=true, b=in[1], out=out[2]);
+	And(a=true, b=in[2], out=out[3]);
+	And(a=true, b=in[3], out=out[4]);
+	And(a=true, b=in[4], out=out[5]);
+	And(a=true, b=in[5], out=out[6]);
+	And(a=true, b=in[6], out=out[7]);
+	And(a=true, b=in[7], out=out[8]);
+	And(a=true, b=in[8], out=out[9]);
+	And(a=true, b=in[9], out=out[10]);
+	And(a=true, b=in[10], out=out[11]);
+	And(a=true, b=in[11], out=out[12]);
+	And(a=true, b=in[12], out=out[13]);
+	And(a=true, b=in[13], out=out[14]);
+	And(a=true, b=in[14], out=out[15]);
+}

@@ -1,0 +1,32 @@
+itayabu, giltal1
+===============================================================================
+itay abulafia, ID 303033286, itay.abu@huji.ac.il
+Gil Tal, ID 30246979, gil.tal1@huji.ac.il
+===============================================================================
+
+                           Project 1 - Boolean Logic
+                           ----------------------- 
+  
+
+Submitted Files
+---------------
+README - This file.
+And.hdl - And gate
+And16.hdl - 16-bit-wise and gate
+DMux.hdl - Demultiplexor
+DMux4Way.hdl - 4-way demultiplexor
+DMux8Way.hdl - 8-way demultiplexor
+Mux.hdl - Multiplexor. If sel==1 then out=b else out=a.
+Mux4Way.hdl - 4-way 16-bit multiplexor.
+Mux8Way16.hdl - 8-way 16-bit multiplexor.
+Mux16.hdl - 16 bit multiplexor. If sel==1 then out=b else out=a.
+Not.hdl - Not gate.
+Not16.hdl - 16-bit Not gate: for i=0..15: out[i] = not in[i]
+Or.hdl - Or gate
+Or8Way.hdl - 8-way or gate: out = in[0] or in[1] or ... or in[7].
+Or16Way.hdl - 16-bit bitwise Or gate: for i=0..15 out[i] = a[i] or b[i].
+Xor.hdl - Exclusive-or gate
+
+Remarks
+-------
+

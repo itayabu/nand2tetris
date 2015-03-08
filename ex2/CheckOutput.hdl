@@ -1,4 +1,9 @@
-
+/**
+ * Helper chip for the ALU.
+ * receive a bus as input and return:
+ * zr if input is zeroes,
+ *ng if input is negative
+ */
 
 CHIP CheckOutput
 {
