@@ -1,0 +1,60 @@
+/**
+ *multiply two numbers.
+ *using Mux to determine each row's result
+ *adding all rows's results to one output
+ */
+CHIP Mul{
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+    //get all options
+    Mux16(a=false, b=a, sel=b[0], out=out0);
+    ShiftLeft(in=a, out=shift1);
+    Mux16(a=false, b= shift1, sel=b[1], out=out1);
+    ShiftLeft(in=shift1, out=shift2);
+    Mux16(a=false, b= shift2, sel=b[2], out=out2);
+    ShiftLeft(in=shift2, out=shift3);
+    Mux16(a=false, b= shift3, sel=b[3], out=out3);
+    ShiftLeft(in=shift3, out=shift4);
+    Mux16(a=false, b= shift4, sel=b[4], out=out4);
+    ShiftLeft(in=shift4, out=shift5);
+    Mux16(a=false, b= shift5, sel=b[5], out=out5);
+    ShiftLeft(in=shift5, out=shift6);
+    Mux16(a=false, b= shift6, sel=b[6], out=out6);
+    ShiftLeft(in=shift6, out=shift7);
+    Mux16(a=false, b= shift7, sel=b[7], out=out7);
+    ShiftLeft(in=shift7, out=shift8);
+    Mux16(a=false, b= shift8, sel=b[8], out=out8);
+    ShiftLeft(in=shift8, out=shift9);
+    Mux16(a=false, b= shift9, sel=b[9], out=out9);
+    ShiftLeft(in=shift9, out=shift10);
+    Mux16(a=false, b= shift10, sel=b[10], out=out10);
+    ShiftLeft(in=shift10, out=shift11);
+    Mux16(a=false, b= shift11, sel=b[11], out=out11);
+    ShiftLeft(in=shift11, out=shift12);
+    Mux16(a=false, b= shift12, sel=b[12], out=out12);
+    ShiftLeft(in=shift12, out=shift13);
+    Mux16(a=false, b= shift13, sel=b[13], out=out13);
+    ShiftLeft(in=shift13, out=shift14);
+    Mux16(a=false, b= shift14, sel=b[14], out=out14);
+    ShiftLeft(in=shift14, out=shift15);
+    Mux16(a=false, b= shift15, sel=b[15], out=out15);
+    
+    //add all options
+    Add16(a=out0, b=out1, out=firstAdd0);
+    Add16(a=out2, b=out3, out=firstAdd1);
+    Add16(a=out4, b=out5, out=firstAdd2);
+    Add16(a=out6, b=out7, out=firstAdd3);
+    Add16(a=out8, b=out9, out=firstAdd4);
+    Add16(a=out10, b=out11, out=firstAdd5);
+    Add16(a=out12, b=out13, out=firstAdd6);
+    Add16(a=out14, b=out15, out=firstAdd7);
+    Add16(a=firstAdd0, b=firstAdd1, out=secondAdd0);
+    Add16(a=firstAdd2, b=firstAdd3, out=secondAdd1);
+    Add16(a=firstAdd4, b=firstAdd5, out=secondAdd2);
+    Add16(a=firstAdd6, b=firstAdd7, out=secondAdd3);
+    Add16(a=secondAdd0, b=secondAdd1, out=thirdAdd0);
+    Add16(a=secondAdd2, b=secondAdd3, out=thirdAdd1);
+    Add16(a=thirdAdd0, b=thirdAdd1, out=out);
+}
