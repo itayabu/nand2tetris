@@ -22,4 +22,4 @@
 	0;JMP	// goto LOOP
 (END)
 	@END
-	0;JMP	// infinite loop
+	

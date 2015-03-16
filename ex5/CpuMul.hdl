@@ -30,9 +30,6 @@ CHIP CpuMul{
         pc[15];          // address of next instruction
 
      PARTS:
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
     //Set name conventions
     And16(a=instruction, b=true, out[0]=j3, out[1]=j2, out[2]=j1,
 						   out[3]=d3, out[4]=d2, out[5]=d1,
@@ -78,7 +75,4 @@ CHIP CpuMul{
     And(a=d3, b=cinst, out=writeM);
     
     PC(in=aRegister, load=shouldjmp, inc=true, reset=reset, out[0..14]=pc);
-=======
->>>>>>> origin/master
->>>>>>> origin/itay
 }
