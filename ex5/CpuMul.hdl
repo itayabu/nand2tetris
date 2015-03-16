@@ -30,4 +30,55 @@ CHIP CpuMul{
         pc[15];          // address of next instruction
 
      PARTS:
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    //Set name conventions
+    And16(a=instruction, b=true, out[0]=j3, out[1]=j2, out[2]=j1,
+						   out[3]=d3, out[4]=d2, out[5]=d1,
+						   out[6]=c6, out[7]=c5, out[8]=c4, out[9]=c3, out[10]=c2, out[11]=c1,
+						   out[12]=ia, out[15]=aorc, out[0..14]=addressa);
+	DMux(in=true, sel=aorc, a=ainst, b=cinst);
+    
+    //Set ARegister
+    And(a=cinst, b=d1, out=computetoa);
+    Mux16(a=instruction, b=alu, sel=computetoa, out=newa);
+    Or(a=ainst, b=computetoa, out=loada);
+    ARegister(in=newa, load=loada, out=aRegister);
+    
+    //Set DRegister
+    And(a=d2, b=cinst, out=loadd);
+    DRegister(in=alu, load=loadd, out=dRegister);
+    
+    //Set Mul 
+    Mul(a=dRegister, b=aorm, out=outMul);
+    
+    //Set
+    //Set ALU
+    Mux16(a=aRegister, b=inM, sel=ia, out=aorm);
+    ExtendAlu(x=dRegister, y=aorm, instruction=instruction[6..14], out=alu, zr=zr, ng=ng);
+    
+    //Set jump conditions
+    Not(in=zr, out=nzr);
+    Not(in=ng, out=nng);
+    And(a=nzr, b=nng, out=pos);
+    And(a=j1, b=ng, out=jlt);
+    And(a=j2, b=zr, out=jeq);
+    And(a=j3, b=pos, out=jgt);
+    Or(a=jlt, b=jeq, out=jle);
+    Or(a=jle, b=jgt, out=jmp);
+    And(a=cinst, b=jmp, out=shouldjmp);
+    
+    //OUTPUTS
+    
+    And16(a=alu, b=true, out=outM);
+    
+    And16(a=aRegister, b=true, out[0..14]=addressM);
+    
+    And(a=d3, b=cinst, out=writeM);
+    
+    PC(in=aRegister, load=shouldjmp, inc=true, reset=reset, out[0..14]=pc);
+=======
+>>>>>>> origin/master
+>>>>>>> origin/itay
 }

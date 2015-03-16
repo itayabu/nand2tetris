@@ -48,17 +48,17 @@ CHIP CPU {
     
     //Set ARegister
     And(a=cinst, b=d1, out=computetoa);
-    Mux16(a=instruction, b=alu, sel=cinst, out=newa);
+    Mux16(a=instruction, b=alu, sel=computetoa, out=newa);
     Or(a=ainst, b=computetoa, out=loada);
-    ARegister(in=newa, load=loada, out=a);
+    ARegister(in=newa, load=loada, out=aRegister);
     
     //Set DRegister
     And(a=d2, b=cinst, out=loadd);
-    DRegister(in=alu, load=loadd, out=d);
+    DRegister(in=alu, load=loadd, out=dRegister);
     
     //Set ALU
-    Mux16(a=a, b=inM, sel=ia, out=aorm);
-    ALU(x=d, y=aorm, zx=c1, nx=c2, zy=c3, ny=c4, f=c5, no=c6, out=alu, zr=zr, ng=ng);
+    Mux16(a=aRegister, b=inM, sel=ia, out=aorm);
+    ALU(x=dRegister, y=aorm, zx=c1, nx=c2, zy=c3, ny=c4, f=c5, no=c6, out=alu, zr=zr, ng=ng);
     
     //Set jump conditions
     Not(in=zr, out=nzr);
@@ -75,9 +75,9 @@ CHIP CPU {
     
     And16(a=alu, b=true, out=outM);
     
-    And16(a=a, b=true, out[0..14]=addressM);
+    And16(a=aRegister, b=true, out[0..14]=addressM);
     
     And(a=d3, b=cinst, out=writeM);
     
-    PC(in=a, load=shouldjmp, inc=true, reset=reset, out[0..14]=pc);
+    PC(in=aRegister, load=shouldjmp, inc=true, reset=reset, out[0..14]=pc);
 }

@@ -16,10 +16,23 @@ CHIP ExtendAlu{
      OUT out[16],zr,ng;
      
      PARTS:
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+	 shiftLeft(in=x, out=leftX);
+	 shiftRight(in=x, out=rightX);
+	 shiftLeft(in=y, out=leftY);
+	 shiftRight(in=y, out=rightY);
+=======
+>>>>>>> origin/itay
 	 ShiftLeft(in=x, out=leftX);
 	 ShiftRight(in=x, out=rightX);
 	 ShiftLeft(in=y, out=leftY);
 	 ShiftRight(in=y, out=rightY);
+<<<<<<< HEAD
+=======
+>>>>>>> origin/master
+>>>>>>> origin/itay
 	 Mux4Way16(a=rightY, b=rightX, c=leftY, d=leftX, sel=instruction[4..5], out=shiftOut);
 	 
 	 Mul(a=x, b=y, out=outMul);
@@ -28,10 +41,24 @@ CHIP ExtendAlu{
 	 
 	 Mux4Way16(a=outMul, b=shiftOut, c=outMul, d=aluOut, sel=instruction[7..8], out[15]=ng, out[0..7]=orA, out[8..15]=orB, out=out);
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+      // sets zr to 1 if (out==0), 0 otherwise
+      Or8Way(in=orA, out=orOut1);
+      Or8Way(in=orB, in[7]=false, out=orOut2);
+      Or(a=orOut1, b=orOut2, out=notZr);
+      Not(in=notZr, out=zr);
+=======
+>>>>>>> origin/itay
      // sets zr to 1 if (out==0), and 0 otherwise
      Or8Way(in=orA, out=orOut1);
      Or8Way(in=orB, in[7]=false, out=orOut2);
      Or(a=orOut1, b=orOut2, out=notZr);
      Not(in=notZr, out=zr);
+<<<<<<< HEAD
+=======
+>>>>>>> origin/master
+>>>>>>> origin/itay
         
 }

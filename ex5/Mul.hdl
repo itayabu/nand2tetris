@@ -10,6 +10,40 @@ CHIP Mul{
     PARTS:
     //get all options
     Mux16(a=false, b=a, sel=b[0], out=out0);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    shiftLeft(in=a, out=shift1);
+    Mux16(a=false, b= shift1, sel=b[1], out=out1);
+    shiftLeft(in=shift1, out=shift2);
+    Mux16(a=false, b= shift2, sel=b[2], out=out2);
+    shiftLeft(in=shift2, out=shift3);
+    Mux16(a=false, b= shift3, sel=b[3], out=out3);
+    shiftLeft(in=shift3, out=shift4);
+    Mux16(a=false, b= shift4, sel=b[4], out=out4);
+    shiftLeft(in=shift4, out=shift5);
+    Mux16(a=false, b= shift5, sel=b[5], out=out5);
+    shiftLeft(in=shift5, out=shift6);
+    Mux16(a=false, b= shift6, sel=b[6], out=out6);
+    shiftLeft(in=shift6, out=shift7);
+    Mux16(a=false, b= shift7, sel=b[7], out=out7);
+    shiftLeft(in=shift7, out=shift8);
+    Mux16(a=false, b= shift8, sel=b[8], out=out8);
+    shiftLeft(in=shift8, out=shift9);
+    Mux16(a=false, b= shift9, sel=b[9], out=out9);
+    shiftLeft(in=shift9, out=shift10);
+    Mux16(a=false, b= shift10, sel=b[10], out=out10);
+    shiftLeft(in=shift10, out=shift11);
+    Mux16(a=false, b= shift11, sel=b[11], out=out11);
+    shiftLeft(in=shift11, out=shift12);
+    Mux16(a=false, b= shift12, sel=b[12], out=out12);
+    shiftLeft(in=shift12, out=shift13);
+    Mux16(a=false, b= shift13, sel=b[13], out=out13);
+    shiftLeft(in=shift13, out=shift14);
+    Mux16(a=false, b= shift14, sel=b[14], out=out14);
+    shiftLeft(in=shift14, out=shift15);
+=======
+>>>>>>> origin/itay
     ShiftLeft(in=a, out=shift1);
     Mux16(a=false, b= shift1, sel=b[1], out=out1);
     ShiftLeft(in=shift1, out=shift2);
@@ -39,6 +73,10 @@ CHIP Mul{
     ShiftLeft(in=shift13, out=shift14);
     Mux16(a=false, b= shift14, sel=b[14], out=out14);
     ShiftLeft(in=shift14, out=shift15);
+<<<<<<< HEAD
+=======
+>>>>>>> origin/master
+>>>>>>> origin/itay
     Mux16(a=false, b= shift15, sel=b[15], out=out15);
     
     //add all options
