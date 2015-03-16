@@ -1,31 +1,22 @@
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/05/CPU.hdl
-
 /**
- * The Central Processing unit (CPU).
- * Consists of an ALU and a set of registers, designed to fetch and 
- * execute instructions written in the Hack machine language.
- * In particular, functions as follows:
- * Executes the inputted instruction according to the Hack machine 
- * language specification. The D and A in the language specification
- * refer to CPU-resident registers, while M refers to the external
- * memory location addressed by A, i.e. to Memory[A]. The inM input 
- * holds the value of this location. If the current instruction needs 
- * to write a value to M, the value is placed in outM, the address 
- * of the target location is placed in the addressM output, and the 
- * writeM control bit is asserted. (When writeM=0, any value may 
- * appear in outM). The outM and writeM outputs are combinational: 
- * they are affected instantaneously by the execution of the current 
- * instruction. The addressM and pc outputs are clocked: although they 
- * are affected by the execution of the current instruction, they commit 
- * to their new values only in the next time unit. If reset=1 then the 
- * CPU jumps to address 0 (i.e. sets pc=0 in next time unit) rather 
- * than to the address resulting from executing the current instruction. 
- */
+* This chip is an extension of the book CPU by using the extended ALU.
+* More specificly if instruction[15]==0 or (instruction[14] and instruction[13] equals 1)
+* the CpuMul behave exactly as the book CPU.
+* While if it is C instruction and instruction[13] == 0 the output will be D*A/M 
+* (according to instruction[12]).
+* Moreover, if it is c instruction and instruction[14] == 0 it will behave as follows:
+*
+* instruction:  | 12 | 11 | 10 |
+* _____________________________
+* shift left D  | 0  | 1  | 1  |
+* shift left A  | 0  | 1  | 0  |
+* shift left M  | 1  | 1  | 0  |
+* shift right D | 0  | 0  | 1  |
+* shift right A | 0  | 0  | 0  |
+* shift right M | 1  | 0  | 0  |
+**/
 
-CHIP CPU {
+CHIP CpuMul{
 
     IN  inM[16],         // M value input  (M = contents of RAM[A])
         instruction[16], // Instruction for execution
@@ -38,7 +29,8 @@ CHIP CPU {
         addressM[15],    // Address in data memory (of M)
         pc[15];          // address of next instruction
 
-    PARTS:
+     PARTS:
+<<<<<<< HEAD
     //Set name conventions
     And16(a=instruction, b=true, out[0]=j3, out[1]=j2, out[2]=j1,
 						   out[3]=d3, out[4]=d2, out[5]=d1,
@@ -56,9 +48,13 @@ CHIP CPU {
     And(a=d2, b=cinst, out=loadd);
     DRegister(in=alu, load=loadd, out=dRegister);
     
+    //Set Mul 
+    Mul(a=dRegister, b=aorm, out=outMul);
+    
+    //Set
     //Set ALU
     Mux16(a=aRegister, b=inM, sel=ia, out=aorm);
-    ALU(x=dRegister, y=aorm, zx=c1, nx=c2, zy=c3, ny=c4, f=c5, no=c6, out=alu, zr=zr, ng=ng);
+    ExtendAlu(x=dRegister, y=aorm, instruction=instruction[6..14], out=alu, zr=zr, ng=ng);
     
     //Set jump conditions
     Not(in=zr, out=nzr);
@@ -80,4 +76,6 @@ CHIP CPU {
     And(a=d3, b=cinst, out=writeM);
     
     PC(in=aRegister, load=shouldjmp, inc=true, reset=reset, out[0..14]=pc);
+=======
+>>>>>>> origin/master
 }
