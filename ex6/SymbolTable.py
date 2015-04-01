@@ -1,5 +1,6 @@
 __author__ = 'Gil'
 
+
 class SymbolTable():
 
     def __init__(self):
@@ -11,7 +12,6 @@ class SymbolTable():
     def addEntry(self, symbol, address):
         self.table[symbol] = address
         # self.availAddress += 1
-
 
     def contains(self, symbol):
         return symbol in self.table

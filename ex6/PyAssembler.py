@@ -30,7 +30,7 @@ def main():
     while parse.hasMoreCommands():
         parse.advance()
         if parse.commandType() is "C_COMMAND":
-            binLine = '111' + code.comp(parse.comp()) + code.dest(parse.dest()) + code.jump(parse.jump())
+            binLine = '1' + code.comp(parse.comp()) + code.dest(parse.dest()) + code.jump(parse.jump())
         if parse.commandType() is "A_COMMAND":
             if parse.symbol().isnumeric():
                 binLine = code.binary(parse.symbol())
