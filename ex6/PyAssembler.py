@@ -1,29 +1,47 @@
+__author__ = 'Gil'
+
 import Parser
+import Code
+import SymbolTable
 import sys
-__author__ = 'Itay'
 
 def main():
-    print("hello world")
+
     inputfile = open(sys.argv[1])
     name = (inputfile.name.split('.'))[0]
+    outputfile = open(name+'.hack','w')
+
+    # Creating relevant Modulus
     parse = Parser.Parser(inputfile)
-    # print(parse.hasMoreCommands())
-    # print(parse.advance())
-    # print(parse.lineCount)
-    # print(parse.hasMoreCommands())
-    # print(parse.advance())
-    # print(parse.lineCount)
-    # print(parse.hasMoreCommands())
-    # print(parse.advance())
-    # print(parse.lineCount)
-    # print(parse.hasMoreCommands())
-    # print(parse.lineCount)
+    code = Code.Code()
+    sym = SymbolTable.SymbolTable()
+
+    #First Run
+    #Inserts 'L Commands' to the symbolTable
     while parse.hasMoreCommands():
-        print(parse.advance())
+        parse.advance()
+        if parse.commandType() is "L_COMMAND":
+            sym.addEntry(parse.symbol(), parse.lineCount - 1)
+            parse.deleteLine()
+    parse.resetCommands()
 
+    #Second Run
+    #Translate each command line to binary code
+    while parse.hasMoreCommands():
+        parse.advance()
+        if parse.commandType() is "C_COMMAND":
+            binLine = '111' + code.comp(parse.comp()) + code.dest(parse.dest()) + code.jump(parse.jump())
+        if parse.commandType() is "A_COMMAND":
+            if parse.symbol().isnumeric():
+                binLine = code.binary(parse.symbol())
+            else:
+                if not sym.contains(parse.symbol()):
+                    sym.addEntry(parse.symbol(), sym.getNextAdd())
+                binLine = code.binary(sym.getAddress(parse.symbol()))
+        if parse.commandType() is "L_COMMAND":
+            continue
 
-    ##line = inputfile.readline()
-
+        outputfile.write(binLine + "\n")
 
 if __name__ == "__main__":
     main()
