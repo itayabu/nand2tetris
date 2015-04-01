@@ -4,15 +4,36 @@ import Parser
 import Code
 import SymbolTable
 import sys
+import os
+
 
 def main():
 
-    inputfile = open(sys.argv[1])
-    name = (inputfile.name.split('.'))[0]
-    outputfile = open(name+'.hack','w')
+    userInput = sys.argv[1]
 
-    # Creating relevant Modulus
-    parse = Parser.Parser(inputfile)
+    #Case input is a directory, run on each .asm file and parse it
+    if os.path.isdir(userInput):
+        if not userInput.endswith("/"):
+            userInput += "/"
+        files = os.listdir(userInput)
+        for file in files:
+            if file.endswith('.asm'):
+                parseFile(userInput+file)
+    #Case input is file, just parse it
+    elif os.path.isfile(userInput):
+        parseFile(userInput)
+    #Raise an exception
+    else:
+        raise Exception("The input is not valid, please try again")
+
+#Parsing a file by a given path
+def parseFile(path):
+    inputFile = open(path)
+    name = (inputFile.name.split('.'))[0]
+    outputFile = open(name+'.hack', 'w')
+
+    #Creating relevant Modulus
+    parse = Parser.Parser(inputFile)
     code = Code.Code()
     sym = SymbolTable.SymbolTable()
 
@@ -34,14 +55,16 @@ def main():
         if parse.commandType() is "A_COMMAND":
             if parse.symbol().isnumeric():
                 binLine = code.binary(parse.symbol())
-            else:
+            else: #commandType is L_COMMAND
                 if not sym.contains(parse.symbol()):
                     sym.addEntry(parse.symbol(), sym.getNextAdd())
                 binLine = code.binary(sym.getAddress(parse.symbol()))
         if parse.commandType() is "L_COMMAND":
             continue
 
-        outputfile.write(binLine + "\n")
+        outputFile.write(binLine + "\n")
+
+    outputFile.close()
 
 if __name__ == "__main__":
     main()
