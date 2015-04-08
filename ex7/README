@@ -1,0 +1,18 @@
+itayabu, giltal1
+==========================================================
+Itay Abulafia, ID 303033286, itay.abu@mail.huji.ac.il
+Gil Tal, ID 30246979, gil.tal@mail.huji.ac.il
+==========================================================
+
+                ptoject 6- Virtual Machine I - Stack Arithmetic
+                -----------------------------------------------
+
+Submitted Files:
+----------------
+README- This file.
+VMtranslator- run the VMtranslator.py
+VMtranslator.py- convert vm files to asm files
+CodeWriter.py - translate vm lines to assembly code
+Parser.py- parse the vm file
+Makefile - make the file
+

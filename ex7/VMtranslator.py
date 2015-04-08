@@ -15,18 +15,23 @@ def translateFile(file, code):
             code.writeArithmetic(parse.currCommand)
 
 def main(argv):
-    input = sys.argv[1]
+    userInput = sys.argv[1]
 
-    if os.path.isdir(input):
-        outputFile = input + ".asm"
+    if os.path.isdir(userInput):
+        if userInput.endswith("/"):
+            userInput = userInput[0:-1]
+        dirname = os.path.basename(userInput)
+        outputFile = userInput + "/" + dirname + ".asm"
         code = CodeWriter.CodeWriter(outputFile)
-        for file in os.listdir(input):
-            code.setFileName(file)
-            translateFile(input + "\\" + file, code)
+        files = os.listdir(userInput)
+        for file in files:
+            if file.endswith('.vm'):
+                code.setFileName(file)
+                translateFile(userInput + "/" + file, code)
     else:
-        outputFile = input.split('.')[0] + ".asm"
+        outputFile = userInput.split('.')[0] + ".asm"
         code = CodeWriter.CodeWriter(outputFile)
-        translateFile(input, code)
+        translateFile(userInput, code)
 
 if __name__ == "__main__":
     main(sys.argv)
