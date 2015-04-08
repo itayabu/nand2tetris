@@ -1,0 +1,18 @@
+itayabu, giltal1
+==========================================================
+Itay Abulafia, ID 303033286, itay.abu@mail.huji.ac.il
+Gil Tal, ID 30246979, gil.tal@mail.huji.ac.il
+==========================================================
+
+                ptoject 6- The Assembler
+                -----------------------------
+
+Submitted Files:
+----------------
+README- This file.
+Assembler- run the Assembler.py
+Assembler.py- convert asm files to hack files
+Code.py - contain binary codes and helper functions for the Assembler.py
+Parser.py- parse the asm file
+SymbolTable.py- contain functions for RAM. 
+

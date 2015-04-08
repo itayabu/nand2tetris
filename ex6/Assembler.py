@@ -49,6 +49,7 @@ def parseFile(path):
     #Second Run
     #Translate each command line to binary code
     while parse.hasMoreCommands():
+        #binLine = ''
         parse.advance()
         if parse.commandType() is "C_COMMAND":
             binLine = '1' + code.comp(parse.comp()) + code.dest(parse.dest()) + code.jump(parse.jump())
