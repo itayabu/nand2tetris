@@ -1,0 +1,18 @@
+itayabu, giltal1
+==========================================================
+Itay Abulafia, ID 303033286, itay.abu@mail.huji.ac.il
+Gil Tal, ID 30246979, gil.tal@mail.huji.ac.il
+==========================================================
+
+                project 10 - Compiler I - Syntax Analysis
+                -----------------------------------------
+
+Submitted Files:
+----------------
+README- This file.
+JackAnalyzer - run the JackAnalyzer.py
+JackAnalyzer.py - a main driver that organizes and invokes everything
+JackTokenizer:.py - a tokenizer
+CompilationEngine.py - a recursive top-down syntax analyzer
+Makefile - make the file
+

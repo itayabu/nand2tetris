@@ -1,10 +1,11 @@
 __author__ = 'Itay'
 
+
 class JackTokenizer:
     TokenTypes = {"KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"}
     KeywordsCodes = {"class", "constructor", "function", "method", "field", "static", "var", "int", "char", "boolean",
                      "void", "true", "false", "null", "this", "let", "do", "if", "else", "while", "return"}
-    SymbolsCodes = {'{' , '}' , '(' , ')' , '[' , ']' , '. ' , ', ' , '; ' , '+' , '-' , '*' , '/' , '&' , ',' , '<' , '>' , '=' , '~'}
+    SymbolsCodes = {'{', '}', '(', ')', '[', ']', '.', ',', ';', '+', '-', '*', '/', '&', '<', '>', '=', '~'}
     IdentifierCodes = {}
 
     def __init__(self, file):
