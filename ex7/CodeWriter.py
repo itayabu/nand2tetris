@@ -168,3 +168,4 @@ class CodeWriter:
         """
         Closes the output file.
         """
+        self.file.close()
