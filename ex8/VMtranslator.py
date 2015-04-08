@@ -29,21 +29,24 @@ def translateFile(file, code):
             print("error in translateFile")
 
 def main(argv):
-    input = sys.argv[1]
+    userInput = sys.argv[1]
 
-    if os.path.isdir(input):
-        outputFile = input + ".asm"
+    if os.path.isdir(userInput):
+        if userInput.endswith("/"):
+            userInput = userInput[0:-1]
+        dirname = os.path.basename(userInput)
+        outputFile = userInput + "/" + dirname + ".asm"
         code = CodeWriter.CodeWriter(outputFile)
         code.writeInit()
-        for file in os.listdir(input):
+        for file in os.listdir(userInput):
             if ".vm" in file.lower():
                 code.setFileName(file)
-                translateFile(input + "\\" + file, code)
+                translateFile(userInput + "/" + file, code)
     else:
-        outputFile = input.split('.')[0] + ".asm"
+        outputFile = userInput.split('.')[0] + ".asm"
         code = CodeWriter.CodeWriter(outputFile)
-        code.setFileName(input)
-        translateFile(input, code)
+        code.setFileName(userInput)
+        translateFile(userInput, code)
 
 if __name__ == "__main__":
     main(sys.argv)
