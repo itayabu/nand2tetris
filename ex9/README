@@ -1,0 +1,17 @@
+itayabu, giltal1
+==========================================================
+Itay Abulafia, ID 303033286, itay.abu@mail.huji.ac.il
+Gil Tal, ID 30246979, gil.tal@mail.huji.ac.il
+==========================================================
+
+                project 9- High Level Programming
+                ---------------------------------
+
+Submitted Files:
+----------------
+README- This file.
+Snake.jack - our snake object, made of blocks
+Block.jack - the basic object which snake is made of`
+Food.jack - round elements the snake needs to eat
+Random.jack - randomise the place of the next food object
+Main.jack - the main program which combines everything
