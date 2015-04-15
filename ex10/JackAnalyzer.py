@@ -3,6 +3,7 @@ __author__ = 'Gil'
 
 import sys
 import os
+import JackTokenizer
 
 
 def main():
@@ -18,8 +19,9 @@ def main():
                 parseFile(userInput + file, userInput + fileName + ".vm")
     #Case input is file, just parse it
     elif os.path.isfile(userInput):
-        userInput = userInput.split(".")[0]
-        parseFile(userInput + ".jack", userInput + ".vm")
+        #userInput = userInput.split(".")[0]
+        tok = JackTokenizer.JackTokenizer(userInput)
+        #parseFile(userInput + ".jack", userInput + ".vm")
     #Raise an exception
     else:
         raise Exception("The input is not valid, please try again")
