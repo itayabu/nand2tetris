@@ -37,7 +37,6 @@ def main(argv):
         dirname = os.path.basename(userInput)
         outputFile = userInput + "/" + dirname + ".asm"
         code = CodeWriter.CodeWriter(outputFile)
-        code.writeInit()
         for file in os.listdir(userInput):
             if ".vm" in file.lower():
                 code.setFileName(file)

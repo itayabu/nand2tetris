@@ -9,6 +9,7 @@ class CodeWriter:
         self.name = ''
         self.compareCounter = 0
         self.functionCounter = 0
+        self.writeInit()
 
     def setFileName(self, fileName):
         """
