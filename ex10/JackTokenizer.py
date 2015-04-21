@@ -33,11 +33,11 @@ class JackTokenizer:
         return [self.token(word) for word in self.split(self.lines)]
 
     def token(self, word):
-        if   re.match(self.keywords_re, word) != None:   return ("KEYWORD", word)
-        elif re.match(self.symbols_re, word) != None:    return ("SYMBOL", word)
-        elif re.match(self.numbers_re, word) != None:    return ("INT_CONST", word)
-        elif re.match(self.strings_re, word) != None:    return ("STRING_CONST", word[1:-2])
-        else:                                            return ("IDENTIFIER", word)
+        if   re.match(self.keywords_re, word) != None: return ("KEYWORD", word)
+        elif re.match(self.symbols_re, word) != None:  return ("SYMBOL", word)
+        elif re.match(self.numbers_re, word) != None:  return ("INT_CONST", word)
+        elif re.match(self.strings_re, word) != None:  return ("STRING_CONST", word[1:-2])
+        else:                                          return ("IDENTIFIER", word)
 
     keywords_re = '|'.join(KeywordsCodes)
     symbols_re = '[' + re.escape('|'.join(SymbolsCodes)) + ']'

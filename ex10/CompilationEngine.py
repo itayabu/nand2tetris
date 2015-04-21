@@ -1,5 +1,6 @@
 __author__ = 'Gil'
 
+import JackTokenizer
 
 class CompilationEngine:
 
@@ -8,16 +9,24 @@ class CompilationEngine:
         creates a new compilation engine with
         the given input and output.
         """
-        self.inputFile = open(input)
+        self.tokenizer = JackTokenizer.JackTokenizer(input)
+        self.parsedRules = []
         self.outputFile = open(output, 'w')
 
-        return
+    def writeNonTerminalStart(self, rule):
+        self.outputFile.write("<"+rule+">\n")
+        self.parsedRules.append(rule)
+
+    def writeNonTerminalEnd(self):
+        self.outputFile.write("</"+rule+">\n")
+        self.parsedRules.pop()
 
     def CompileClass(self):
         """
         compiles a complete class.
         """
-        return
+        token, value = self.tokenizer.advance()
+        self.writeNonTerminalStart(token)
 
     def CompileClassVarDec(self):
         """
@@ -54,12 +63,6 @@ class CompilationEngine:
         return
 
     def compileDo(self):
-        """
-        compiles a complete class.
-        """
-        return
-
-    def CompileClass(self):
         """
         Compiles a do statement
         """
