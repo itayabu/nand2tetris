@@ -19,6 +19,7 @@ class JackTokenizer:
         self.lines = self.file.read() # Read code
         self.removeComments() # Remove comments
         self.tokens = self.tokenize()
+        print(self.tokens)
 
     def removeComments(self):
         """ Removes comments from the file string """
@@ -33,11 +34,11 @@ class JackTokenizer:
         return [self.token(word) for word in self.split(self.lines)]
 
     def token(self, word):
-        if   re.match(self.keywords_re, word) != None: return ("KEYWORD", word)
-        elif re.match(self.symbols_re, word) != None:  return ("SYMBOL", word)
-        elif re.match(self.numbers_re, word) != None:  return ("INT_CONST", word)
-        elif re.match(self.strings_re, word) != None:  return ("STRING_CONST", word[1:-2])
-        else:                                          return ("IDENTIFIER", word)
+        if   re.match(self.keywords_re, word) != None: return ("keyword", word)
+        elif re.match(self.symbols_re, word) != None:  return ("symbol", word)
+        elif re.match(self.numbers_re, word) != None:  return ("integerConstant", word)
+        elif re.match(self.strings_re, word) != None:  return ("stringConstant", word[1:-2])
+        else:                                          return ("identifier", word)
 
     keywords_re = '|'.join(KeywordsCodes)
     symbols_re = '[' + re.escape('|'.join(SymbolsCodes)) + ']'
@@ -65,49 +66,20 @@ class JackTokenizer:
         self.currToken = self.tokens.pop[0]
         return self.currToken
 
-    def tokenType(self):
+    def peek(self):
+        if self.hasMoreTokens():
+            return self.tokens[0]
+        else:
+            return ("ERROR", 0)
+
+    def getToken(self):
         """
         returns the type of the current token
         """
         return self.currToken[0]
 
-    def keyWord(self):
+    def getValue(self):
         """
-        returns the keyword which is the current
-        token. Should be called only when
-        tokenType() is KEYWORD
-        """
-        return self.currToken[1]
-
-    def symbol(self):
-        """
-        returns the character which is the current
-        token. Should be called only when
-        tokenType() is SYMBOL
-        """
-        return self.currToken[1]
-
-    def indentifier(self):
-        """
-        returns the identifier which is the current
-        token. Should be called only when
-        tokenType() is IDENTIFIER
-        """
-        return self.currToken[1]
-
-    def intVal(self):
-        """
-        returns the integer value of the current
-        token. Should be called only when
-        tokenType() is INT_CONST
-        """
-        return self.currToken[1]
-
-    def stringVal(self):
-        """
-        returns the string value of the current
-        token, without the double quotes. Should
-        be called only when tokenType() is
-        STRING_CONST.
+        returns the current value
         """
         return self.currToken[1]
