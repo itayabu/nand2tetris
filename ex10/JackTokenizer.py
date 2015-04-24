@@ -19,7 +19,7 @@ class JackTokenizer:
         self.lines = self.file.read() # Read code
         self.removeComments() # Remove comments
         self.tokens = self.tokenize()
-        print(self.tokens)
+        self.tokens = self.replaceSymbols()
 
     def removeComments(self):
         """ Removes comments from the file string """
@@ -50,6 +50,17 @@ class JackTokenizer:
     def split(self, line):
         return self.word.findall(line)
 
+    def replaceSymbols(self):
+        return [self.replace(pair) for pair in self.tokens]
+
+    def replace(self, pair):
+        token, value = pair
+        if   value == '<': return (token, '&lt;')
+        elif value == '>': return (token, '&gt;')
+        elif value == '"': return (token, '&quot;')
+        elif value == '&': return (token, '&amp;')
+        else:              return (token, value)
+
     def hasMoreTokens(self):
         """
         do we have more tokens in the input?
@@ -63,7 +74,7 @@ class JackTokenizer:
         should only be called if hasMoreTokens()
         is true. Initially there is no current token
         """
-        self.currToken = self.tokens.pop[0]
+        self.currToken = self.tokens.pop(0)
         return self.currToken
 
     def peek(self):

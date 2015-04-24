@@ -1,9 +1,8 @@
 __author__ = 'Gil'
 
-
 import sys
 import os
-import JackTokenizer
+import CompilationEngine
 
 
 def main():
@@ -16,19 +15,16 @@ def main():
         for file in files:
             if file.endswith('.jack'):
                 fileName = file.split(".")[0]
-                parseFile(userInput + file, userInput + fileName + ".vm")
+                comp = CompilationEngine.CompilationEngine(userInput + file, userInput + fileName + ".xml")
+                comp.compileClass()
     #Case input is file, just parse it
     elif os.path.isfile(userInput):
-        #userInput = userInput.split(".")[0]
-        tok = JackTokenizer.JackTokenizer(userInput)
-        #parseFile(userInput + ".jack", userInput + ".vm")
+        userInput = userInput.split(".")[0]
+        comp = CompilationEngine.CompilationEngine(userInput + ".jack", userInput + ".xml")
+        comp.compileClass()
     #Raise an exception
     else:
         raise Exception("The input is not valid, please try again")
-
-def parseFile(input, output):
-    return True
-
 
 if __name__ == "__main__":
     main()
