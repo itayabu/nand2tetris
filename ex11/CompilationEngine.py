@@ -19,6 +19,7 @@ class CompilationEngine:
         self.tokenizer = JackTokenizer.JackTokenizer(input)
         self.writer = VMWriter.VMWriter(output)
         self.symbolTable = SymbolTable.SymbolTable()
+        self.className = ''
         #self.parsedRules = []
         #self.outputFile = open(output, 'w')
         #self.indent = ""
@@ -43,8 +44,8 @@ class CompilationEngine:
     #     self.outputFile.write(self.indent+"<"+token+"> "+value+" </"+token+">\n")
 
     def advance(self):
-        token, value = self.tokenizer.advance()
-        self.writeTerminal(token, value)
+        return self.tokenizer.advance()
+        #self.writeTerminal(token, value)
 
     def nextValueIn(self, list):
         token, value = self.tokenizer.peek()
@@ -64,7 +65,7 @@ class CompilationEngine:
         """
         # self.writeNonTerminalStart('class')
         self.advance()  # get 'class' keyword
-        self.advance()  # get class name
+        self.className = self.advance()[2]  # get class name
         self.advance()  # get '{' symbol
         if self.existClassVarDec():
             self.compileClassVarDec()
@@ -96,10 +97,11 @@ class CompilationEngine:
         kind = self.advance()[2]  # get 'static' or 'field'
         type = self.advance()[2]  # get var type
         name = self.advance()[2]  # get var name
-        self.symbolTable
+        self.symbolTable.define(name, type, kind)
         while self.nextValueIs(","):
             self.advance()  # get ',' symbol
-            self.advance()  # get var name
+            name = self.advance()  # get var name
+            self.symbolTable.define(name, type, kind)
         self.advance()  # get ';' symbol
 
     def compileSubroutine(self):
@@ -107,15 +109,16 @@ class CompilationEngine:
         compiles a complete method, function,
         or constructor.
         """
-        self.writeNonTerminalStart('subroutineDec')
-        self.advance()  # get subroutine type
-        self.advance()  # get subroutine return type / 'constructor'
-        self.advance()  # get subroutine name / 'new'
+        #self.writeNonTerminalStart('subroutineDec')
+        self.advance()  # get subroutine type / 'constructor'
+        self.advance()  # get subroutine return type / class name
+        name = self.className + '.' + self.advance()  # get subroutine name / 'new'
         self.advance()  # get '(' symbol
-        self.compileParameterList()
+        nArgs = self.compileParameterList()
+        self.writer.writeFunction(name, nArgs)
         self.advance()  # get ')' symbol
         self.compileSubroutineBody()
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
 
     def compileParameterList(self):
@@ -123,10 +126,13 @@ class CompilationEngine:
         compiles a (possibly empty) parameter
         list, not including the enclosing “()”.
         """
-        self.writeNonTerminalStart('parameterList')
+        #self.writeNonTerminalStart('parameterList')
+        counter = 0
         while self.existParameter():
             self.writeParam()
-        self.writeNonTerminalEnd()
+            counter += 1
+        return counter
+        #self.writeNonTerminalEnd()
 
     def existParameter(self):
         return not self.nextTokenIs("symbol")
@@ -139,13 +145,13 @@ class CompilationEngine:
 
 
     def compileSubroutineBody(self):
-        self.writeNonTerminalStart('subroutineBody')
+        #self.writeNonTerminalStart('subroutineBody')
         self.advance()  # get '{' symbol
         while self.existVarDec():
             self.compileVarDec()
         self.compileStatements()
         self.advance()  # get '}' symbol
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
     def existVarDec(self):
         return self.nextValueIs("var")
@@ -154,26 +160,26 @@ class CompilationEngine:
         """
         compiles a var declaration.
         """
-        self.writeNonTerminalStart('varDec')
+        #self.writeNonTerminalStart('varDec')
         self.advance()  # get 'var' keyword
         self.advance()  # get var type
         self.advance()  # get var name
         self.advance()  # get ';' symbol
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
     def compileStatements(self):
         """
         compiles a sequence of statements, not
         including the enclosing “{}”.
         """
-        self.writeNonTerminalStart('statements')
+        #self.writeNonTerminalStart('statements')
         while self.existStatement():
             if   self.nextValueIs("do"):     self.compileDo()
             elif self.nextValueIs("let"):    self.compileLet()
             elif self.nextValueIs("if"):     self.compileIf()
             elif self.nextValueIs("while"):  self.compileWhile()
             elif self.nextValueIs("return"): self.compileReturn()
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
     def existStatement(self):
         return self.nextValueIs("do") \
@@ -186,11 +192,11 @@ class CompilationEngine:
         """
         compiles a do statement
         """
-        self.writeNonTerminalStart('doStatement')
+        #self.writeNonTerminalStart('doStatement')
         self.advance()  # get 'do' keyword
         self.compileSubroutineCall()
         self.advance()  # get ';' symbol
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
     def compileSubroutineCall(self):
         self.advance()  # get class/subroutine/var name
@@ -202,19 +208,19 @@ class CompilationEngine:
         self.advance()  # get ')' symbol
 
     def compileExpressionList(self):
-        self.writeNonTerminalStart('expressionList')
+        #self.writeNonTerminalStart('expressionList')
         if self.existExpression():
             self.compileExpression()
         while self.nextValueIs(","):  # case of multiple expressions
             self.advance()  # get ',' symbol
             self.compileExpression()
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
     def compileLet(self):
         """
         compiles a let statement
         """
-        self.writeNonTerminalStart('letStatement')
+        #self.writeNonTerminalStart('letStatement')
         self.advance()  # get 'let' keyword
         self.advance()  # get var name
         if self.nextValueIs("["): #case of varName[expression]
@@ -222,7 +228,7 @@ class CompilationEngine:
         self.advance()  # get '='
         self.compileExpression()
         self.advance()  # get ';' symbol
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
     def writeArrayIndex(self):
         self.advance()  # get '[' symbol
@@ -233,7 +239,7 @@ class CompilationEngine:
         """
         compiles a while statement
         """
-        self.writeNonTerminalStart('whileStatement')
+        #self.writeNonTerminalStart('whileStatement')
         self.advance()  # get 'while' keyword
         self.advance()  # get '(' symbol
         self.compileExpression()
@@ -241,18 +247,18 @@ class CompilationEngine:
         self.advance()  # get '{' symbol
         self.compileStatements()
         self.advance()  # get '}' symbol
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
     def compileReturn(self):
         """
         compiles a return statement.
         """
-        self.writeNonTerminalStart('returnStatement')
+        #self.writeNonTerminalStart('returnStatement')
         self.advance()  # get 'return' keyword
         while self.existExpression():
             self.compileExpression()
         self.advance()  # get ';' symbol
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
     def existExpression(self):
         return self.existTerm()
@@ -268,7 +274,7 @@ class CompilationEngine:
         compiles an if statement, possibly
         with a trailing else clause.
         """
-        self.writeNonTerminalStart('ifStatement')
+        #self.writeNonTerminalStart('ifStatement')
         self.advance()  # get 'if' keyword
         self.advance()  # get '(' symbol
         self.compileExpression()
@@ -281,24 +287,24 @@ class CompilationEngine:
             self.advance()  # get '{' symbol
             self.compileStatements()
             self.advance()  # get '}' symbol
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
     def compileExpression(self):
         """
         compiles an expression.
         """
-        self.writeNonTerminalStart('expression')
+        #self.writeNonTerminalStart('expression')
         self.compileTerm()
         while self.nextValueIn(self.binaryOp):
             self.advance()  # get op symbol
             self.compileTerm()
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
 
     def compileTerm(self):
         """
         compiles a term
         """
-        self.writeNonTerminalStart('term')
+        #self.writeNonTerminalStart('term')
         if self.nextTokenIs("integerConstant") or self.nextTokenIs("stringConstant")\
                 or (self.nextValueIn(self.keywordConstant)):
             self.advance()  # get constant
@@ -319,4 +325,4 @@ class CompilationEngine:
             self.advance()  # get '(' symbol
             self.compileExpression()
             self.advance()  # get ')' symbol
-        self.writeNonTerminalEnd()
+        #self.writeNonTerminalEnd()
