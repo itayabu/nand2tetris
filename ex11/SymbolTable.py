@@ -17,7 +17,10 @@ class SymbolTable:
         """Defines a new identifier of a given name, type, and kind and assigns it a running
         index. STATIC and FIELD identifiers have a class scope, while ARG and VAR
         identifiers have a subroutine scope. """
-        self.subroutineSymbolTable[name] = (type, kind)
+        if kind == "STATIC" or kind == "FIELD":
+            self.classSymbolTable[name] = (type, kind)
+        else:
+            self.subroutineSymbolTable[name] = (type, kind)
 
     def varCount(self, kind):
         """Returns the number of variables of the given kind already defined in the current scope."""
@@ -27,11 +30,11 @@ class SymbolTable:
         """Returns the kind of the named identifier in
         the current scope. Returns NONE if the
         identifier is unknown in the current scope."""
-        return
+        return self.subroutineSymbolTable[name][1] if (name in self.subroutineSymbolTable) else "NONE"
 
     def typeOf(self, name):
         """Returns the type of the named identifier in the current scope."""
-        return
+        return self.subroutineSymbolTable[name][0] if (name in self.subroutineSymbolTable) else "NONE"
 
     def indexOf(self, name):
         """Returns the index assigned to named identifier."""

@@ -1,6 +1,8 @@
 __author__ = 'Gil'
 
 import JackTokenizer
+import SymbolTable
+import VMWriter
 
 
 class CompilationEngine:
@@ -15,28 +17,30 @@ class CompilationEngine:
         the given input and output.
         """
         self.tokenizer = JackTokenizer.JackTokenizer(input)
-        self.parsedRules = []
-        self.outputFile = open(output, 'w')
-        self.indent = ""
+        self.writer = VMWriter.VMWriter(output)
+        self.symbolTable = SymbolTable.SymbolTable()
+        #self.parsedRules = []
+        #self.outputFile = open(output, 'w')
+        #self.indent = ""
 
-    def addIndent(self):
-        self.indent += "  "
+    # def addIndent(self):
+    #     self.indent += "  "
+    #
+    # def deleteIndent(self):
+    #     self.indent = self.indent[:-2]
 
-    def deleteIndent(self):
-        self.indent = self.indent[:-2]
-
-    def writeNonTerminalStart(self, rule):
-        self.outputFile.write(self.indent+"<"+rule+">\n")
-        self.parsedRules.append(rule)
-        self.addIndent()
-
-    def writeNonTerminalEnd(self):
-        self.deleteIndent()
-        rule = self.parsedRules.pop()
-        self.outputFile.write(self.indent+"</"+rule+">\n")
-
-    def writeTerminal(self, token, value):
-        self.outputFile.write(self.indent+"<"+token+"> "+value+" </"+token+">\n")
+    # def writeNonTerminalStart(self, rule):
+    #     self.outputFile.write(self.indent+"<"+rule+">\n")
+    #     self.parsedRules.append(rule)
+    #     self.addIndent()
+    #
+    # def writeNonTerminalEnd(self):
+    #     self.deleteIndent()
+    #     rule = self.parsedRules.pop()
+    #     self.outputFile.write(self.indent+"</"+rule+">\n")
+    #
+    # def writeTerminal(self, token, value):
+    #     self.outputFile.write(self.indent+"<"+token+"> "+value+" </"+token+">\n")
 
     def advance(self):
         token, value = self.tokenizer.advance()
@@ -58,7 +62,7 @@ class CompilationEngine:
         """
         compiles a complete class.
         """
-        self.writeNonTerminalStart('class')
+        # self.writeNonTerminalStart('class')
         self.advance()  # get 'class' keyword
         self.advance()  # get class name
         self.advance()  # get '{' symbol
@@ -67,8 +71,9 @@ class CompilationEngine:
         while self.existSubroutine():
             self.compileSubroutine()
         self.advance() #get '}' symbol
-        self.writeNonTerminalEnd()
-        self.outputFile.close()
+        # self.writeNonTerminalEnd()
+        # self.outputFile.close()
+        self.writer.close()
 
     def existClassVarDec(self):
         return self.nextValueIs("static") or self.nextValueIs("field")
@@ -83,14 +88,15 @@ class CompilationEngine:
         declaration.
         """
         while self.existClassVarDec():
-            self.writeNonTerminalStart('classVarDec')
+            #self.writeNonTerminalStart('classVarDec')
             self.writeClassVarDec()
-            self.writeNonTerminalEnd()
+            #self.writeNonTerminalEnd()
 
     def writeClassVarDec(self):
-        self.advance()  # get 'static' or 'field'
-        self.advance()  # get var type
-        self.advance()  # get var name
+        kind = self.advance()[2]  # get 'static' or 'field'
+        type = self.advance()[2]  # get var type
+        name = self.advance()[2]  # get var name
+        self.symbolTable
         while self.nextValueIs(","):
             self.advance()  # get ',' symbol
             self.advance()  # get var name
