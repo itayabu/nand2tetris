@@ -3,7 +3,7 @@ __author__ = 'Itay'
 class CodeWriter:
     def __init__(self, file):
         """
-        Opens the output file/stream and gets ready to write into it.
+        Opens the output file and gets ready to write into it.
         """
         self.file = open(file, 'w')
         self.counter = 0
@@ -25,11 +25,11 @@ class CodeWriter:
 
     def binaryOp(self, operation):
         commandStr = "@SP\n" + \
-                     "M = M - 1\n" \
+                     "M = M - 1\n" + \
                      "A = M\n" + \
                      "D = M\n" + \
                      "@SP\n" + \
-                     "M = M - 1\n" \
+                     "M = M - 1\n" + \
                      "A = M\n" + \
                      "M = M " + operation + " D\n" + \
                      "@SP\n" + \
@@ -37,21 +37,51 @@ class CodeWriter:
         return commandStr
 
     def compareOp(self, command):
-        self.counter +=1
+        self.counter += 1
         commandStr = "@SP\n" + \
-                     "M = M - 1\n" \
+                     "M = M - 1\n" + \
                      "A = M\n" + \
                      "D = M\n" + \
+                     "@R13\n" + \
+                     "M = D\n" + \
+                     "@yNeg" + str(self.counter) + "\n" + \
+                     "D;JLT\n" + \
                      "@SP\n" + \
-                     "M = M - 1\n" \
+                     "M = M - 1\n" + \
                      "A = M\n" + \
-                     "D = M - D\n" + \
-                     "@CORRECT" + str(self.counter) + "\n" + \
-                     "D;J"+ command.upper() + "\n" + \
+                     "D = M\n" + \
+                     "@yPosXNeg" + str(self.counter) + "\n" + \
+                     "D;JLT\n" + \
+                     "@R13\n" + \
+                     "D = D - M\n" + \
+                     "@CHECK" + str(self.counter) + "\n" + \
+                     "0;JMP\n" + \
+                     "(yNeg" + str(self.counter) + ")\n" + \
+                     "@SP\n" + \
+                     "M = M - 1\n" + \
+                     "A = M\n" + \
+                     "D = M\n" + \
+                     "@yNegXPos" + str(self.counter) + "\n" + \
+                     "D;JGT\n" + \
+                     "@R13\n" + \
+                     "D = D - M\n" + \
+                     "@CHECK" + str(self.counter) + "\n" + \
+                     "0;JMP\n" + \
+                     "(yPosXNeg" + str(self.counter) + ")\n" + \
+                     "D = -1\n" + \
+                     "@CHECK" + str(self.counter) + "\n" + \
+                     "0;JMP\n" + \
+                     "(yNegXPos" + str(self.counter) + ")\n" + \
+                     "D = 1\n" + \
+                     "@CHECK" + str(self.counter) + "\n" + \
+                     "0;JMP\n" + \
+                     "(CHECK" + str(self.counter) + ")\n" + \
+                     "@ISTRUE" + str(self.counter) + "\n" + \
+                     "D;J" + command.upper() + "\n" + \
                      "D = 0\n" + \
                      "@AFTER" + str(self.counter) + "\n" + \
                      "0;JMP\n" + \
-                     "(CORRECT" + str(self.counter) + ")\n" + \
+                     "(ISTRUE" + str(self.counter) + ")\n" + \
                      "D = -1\n" + \
                      "@AFTER" + str(self.counter) + "\n" + \
                      "0;JMP\n" + \
@@ -61,6 +91,7 @@ class CodeWriter:
                      "M = D\n" + \
                      "@SP\n" + \
                      "M = M + 1\n"
+
         return commandStr
 
     def writeArithmetic(self, command):
@@ -135,7 +166,7 @@ class CodeWriter:
 
             elif segment == "this" or segment == "that" or segment == "local" or segment == "argument":
                 commandStr = "@"+index +"\n" + \
-                             "D=A\n" + \
+                             "D = A\n" + \
                              "@"+self.translateDict(segment)+"\n"+ \
                              "A = M+D\n" + \
                              "D = M\n" + \
@@ -143,22 +174,21 @@ class CodeWriter:
 
             elif segment == "constant": # push constant
                 commandStr = "@" + index + "\n" + \
-                             "D=A\n" + \
+                             "D = A\n" + \
                              self.push2stack()
 
             elif segment == "static":
-                commandStr = "@"+self.file.name.split(".")[0] + "." + index + "\n" + \
-                             "D = M" + \
+                commandStr = "@"+self.file.name.split(".")[0].replace('/','.') + "." + index + "\n" + \
+                             "D = M\n" + \
                              self.push2stack()
         else: # pop
             if segment == "static":
                 commandStr = "@SP\n" + \
+                             "M = M - 1\n" + \
                              "A = M\n" + \
                              "D = M\n" + \
-                             "@"+self.file.name.split(".")[0] + "." + index + "\n" + \
-                             "M = D\n" + \
-                             "@SP\n" + \
-                             "M = M - 1\n"
+                             "@"+self.file.name.split(".")[0].replace('/','.') + "." + index + "\n" + \
+                             "M = D\n"
             else:
                 commandStr = self.popFromStack(segment, index)
 

@@ -28,10 +28,12 @@ def main(argv):
             if file.endswith('.vm'):
                 code.setFileName(file)
                 translateFile(userInput + "/" + file, code)
+                code.close()
     else:
         outputFile = userInput.split('.')[0] + ".asm"
         code = CodeWriter.CodeWriter(outputFile)
         translateFile(userInput, code)
+        code.close()
 
 if __name__ == "__main__":
     main(sys.argv)
