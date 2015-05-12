@@ -9,35 +9,35 @@ class VMWriter:
 
     def writePush(self, segment, index):
         """Writes a VM push command"""
-        self.outputFile.write('push ' + segment + ' ' + index + '\n')
+        self.outputFile.write('push ' + segment + ' ' + str(index) + '\n')
 
     def writePop(self, segment, index):
         """Writes a VM pop command"""
-        self.outputFile.write('pop ' + segment + ' ' + index + '\n')
+        self.outputFile.write('pop ' + segment + ' ' + str(index) + '\n')
 
-    def WriteArithmetic(self, command):
+    def writeArithmetic(self, command):
         """Writes a VM arithmetic command"""
         self.outputFile.write(command + '\n')
 
-    def WriteLabel(self, label):
+    def writeLabel(self, label):
         """Writes a VM label command"""
         self.outputFile.write('label ' + label + '\n')
 
-    def WriteGoto(self, label):
+    def writeGoto(self, label):
         """Writes a VM goto command"""
         self.outputFile.write('goto ' + label + '\n')
 
-    def WriteIf(self, label):
+    def writeIf(self, label):
         """Writes a VM if-goto command"""
         self.outputFile.write('if-goto ' + label + '\n')
 
-    def WriteCall(self, name, nLocals):
+    def writeCall(self, name, nLocals):
         """Writes a VM call command"""
-        self.outputFile.write('call ' + name + ' ' + nLocals + '\n')
+        self.outputFile.write('call ' + name + ' ' + str(nLocals) + '\n')
 
-    def WriteFunction(self, name, nArgs):
+    def writeFunction(self, name, nArgs):
         """Writes a VM function command"""
-        self.outputFile.write('function ' + name + ' ' + nArgs + '\n')
+        self.outputFile.write('function ' + name + ' ' + str(nArgs) + '\n')
 
     def writeReturn(self):
         """Writes a VM return command"""

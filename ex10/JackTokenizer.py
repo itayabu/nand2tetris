@@ -37,7 +37,7 @@ class JackTokenizer:
         if   re.match(self.keywords_re, word) != None: return ("keyword", word)
         elif re.match(self.symbols_re, word) != None:  return ("symbol", word)
         elif re.match(self.numbers_re, word) != None:  return ("integerConstant", word)
-        elif re.match(self.strings_re, word) != None:  return ("stringConstant", word[1:-2])
+        elif re.match(self.strings_re, word) != None:  return ("stringConstant", word[1:-1])
         else:                                          return ("identifier", word)
 
     keywords_re = '|'.join(KeywordsCodes)

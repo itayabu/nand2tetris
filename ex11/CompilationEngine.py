@@ -65,7 +65,7 @@ class CompilationEngine:
         """
         # self.writeNonTerminalStart('class')
         self.advance()  # get 'class' keyword
-        self.className = self.advance()[2]  # get class name
+        self.className = self.advance()[1]  # get class name
         self.advance()  # get '{' symbol
         if self.existClassVarDec():
             self.compileClassVarDec()
@@ -112,12 +112,13 @@ class CompilationEngine:
         #self.writeNonTerminalStart('subroutineDec')
         self.advance()  # get subroutine type / 'constructor'
         self.advance()  # get subroutine return type / class name
-        name = self.className + '.' + self.advance()  # get subroutine name / 'new'
+        name = self.className + '.' + self.advance()[1]  # get subroutine name / 'new'
+        self.symbolTable.NodeTable.addChild(name)
+        self.symbolTable.currScope = self.symbolTable.currScope.children[name]###################
         self.advance()  # get '(' symbol
         nArgs = self.compileParameterList()
-        self.writer.writeFunction(name, nArgs)
         self.advance()  # get ')' symbol
-        self.compileSubroutineBody()
+        self.compileSubroutineBody(name, nArgs)
         #self.writeNonTerminalEnd()
 
 
@@ -138,19 +139,27 @@ class CompilationEngine:
         return not self.nextTokenIs("symbol")
 
     def writeParam(self):
-        self.advance()  # get parameter type
-        self.advance()  # get parameter name
+        type = self.advance()  # get parameter type
+        name = self.advance()  # get parameter name
+        self.symbolTable.define(name, type, 'var')
         if self.nextValueIs(","):
             self.advance()  # get ',' symbol
 
 
-    def compileSubroutineBody(self):
+    def compileSubroutineBody(self, name, nArgs):
         #self.writeNonTerminalStart('subroutineBody')
         self.advance()  # get '{' symbol
         while self.existVarDec():
             self.compileVarDec()
+        nVars = self.symbolTable.varCount('var') - nArgs
+        self.writer.writeFunction(name, nVars)
+        if '.new' in name:
+            globals = self.symbolTable.globalCount('field')
+            self.writer.writePush('constant', globals)
+        #TODO: what to do with memory alloc???
         self.compileStatements()
         self.advance()  # get '}' symbol
+        self.symbolTable.currScope = self.symbolTable.currScope.getParent()##############
         #self.writeNonTerminalEnd()
 
     def existVarDec(self):
@@ -161,9 +170,14 @@ class CompilationEngine:
         compiles a var declaration.
         """
         #self.writeNonTerminalStart('varDec')
-        self.advance()  # get 'var' keyword
-        self.advance()  # get var type
-        self.advance()  # get var name
+        kind = self.advance()  # get 'var' keyword
+        type = self.advance()  # get var type
+        name = self.advance()  # get var name
+        self.symbolTable.define(name, type, kind)
+        while self.nextValueIs(","):
+            self.advance()  # get ',' symbol
+            self.advance()  #get next var name
+            self.symbolTable.define(name, type, kind)
         self.advance()  # get ';' symbol
         #self.writeNonTerminalEnd()
 
@@ -199,21 +213,29 @@ class CompilationEngine:
         #self.writeNonTerminalEnd()
 
     def compileSubroutineCall(self):
-        self.advance()  # get class/subroutine/var name
+        firstName = lastName = ''
+        firstName = self.advance()[1]  # get class/subroutine/var name
         if self.nextValueIs("."):  # case of className.subroutineName
             self.advance()  # get '.' symbol
-            self.advance()  # get subroutine name
+            lastName = self.advance()[1]  # get subroutine name
+        if lastName != '':
+            firstName = firstName + '.' + lastName
         self.advance()  # get '(' symbol
-        self.compileExpressionList()
+        nLocals = self.compileExpressionList()
+        self.writer.writeCall(firstName, nLocals)
         self.advance()  # get ')' symbol
 
     def compileExpressionList(self):
         #self.writeNonTerminalStart('expressionList')
+        counter = 0
         if self.existExpression():
             self.compileExpression()
+            counter += 1
         while self.nextValueIs(","):  # case of multiple expressions
             self.advance()  # get ',' symbol
             self.compileExpression()
+            counter += 1
+        return counter
         #self.writeNonTerminalEnd()
 
     def compileLet(self):
@@ -223,6 +245,7 @@ class CompilationEngine:
         #self.writeNonTerminalStart('letStatement')
         self.advance()  # get 'let' keyword
         self.advance()  # get var name
+
         if self.nextValueIs("["): #case of varName[expression]
             self.writeArrayIndex()
         self.advance()  # get '='
@@ -255,8 +278,14 @@ class CompilationEngine:
         """
         #self.writeNonTerminalStart('returnStatement')
         self.advance()  # get 'return' keyword
+        returnEmpty = True
         while self.existExpression():
+            returnEmpty = False
             self.compileExpression()
+        if (returnEmpty):
+            self.writer.writePop('temp', 0)
+            self.writer.writePush('constant', 0)
+        self.writer.writeReturn()
         self.advance()  # get ';' symbol
         #self.writeNonTerminalEnd()
 
@@ -305,9 +334,24 @@ class CompilationEngine:
         compiles a term
         """
         #self.writeNonTerminalStart('term')
-        if self.nextTokenIs("integerConstant") or self.nextTokenIs("stringConstant")\
-                or (self.nextValueIn(self.keywordConstant)):
-            self.advance()  # get constant
+        if self.nextTokenIs("integerConstant"):
+            value = self.advance()[1]  # get constant
+            self.writer.writePush('constant', value)
+        elif self.nextTokenIs("stringConstant"):
+            value = self.advance()[1]  # get string
+            self.writer.writeCall('String.new', 1)
+            self.writer.writePush('constant', len(value))
+            for letter in value:
+                self.writer.writePush('String.appendChar', 2)
+                self.writer.writePush('constant', ord(letter))
+        elif (self.nextValueIn(self.keywordConstant)):
+            value = self.advance()[1]  # get keywordConstant
+            if value == "this":
+                self.writer.writePush('pointer', 0)
+            else:
+                self.writer.writePush('constant', 0)
+                if value == "true":
+                    self.writer.writeArithmetic('not')
         elif self.nextTokenIs("identifier"):
             self.advance()  # get class/var name
             if self.nextValueIs("["):  # case of varName[expression]
