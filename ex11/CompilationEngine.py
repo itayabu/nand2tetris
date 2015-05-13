@@ -113,8 +113,8 @@ class CompilationEngine:
         self.advance()  # get subroutine type / 'constructor'
         self.advance()  # get subroutine return type / class name
         name = self.className + '.' + self.advance()[1]  # get subroutine name / 'new'
-        self.symbolTable.NodeTable.addChild(name)
-        self.symbolTable.currScope = self.symbolTable.currScope.children[name]###################
+        self.symbolTable.startSubroutine(name)
+        self.symbolTable.setScope(name)
         self.advance()  # get '(' symbol
         nArgs = self.compileParameterList()
         self.advance()  # get ')' symbol
@@ -154,12 +154,12 @@ class CompilationEngine:
         nVars = self.symbolTable.varCount('var') - nArgs
         self.writer.writeFunction(name, nVars)
         if '.new' in name:
-            globals = self.symbolTable.globalCount('field')
-            self.writer.writePush('constant', globals)
+            globalVars = self.symbolTable.globalCount('field')
+            self.writer.writePush('constant', globalVars)
         #TODO: what to do with memory alloc???
         self.compileStatements()
         self.advance()  # get '}' symbol
-        self.symbolTable.currScope = self.symbolTable.currScope.getParent()##############
+        self.symbolTable.setScope('global')
         #self.writeNonTerminalEnd()
 
     def existVarDec(self):
@@ -339,12 +339,12 @@ class CompilationEngine:
             self.writer.writePush('constant', value)
         elif self.nextTokenIs("stringConstant"):
             value = self.advance()[1]  # get string
-            self.writer.writeCall('String.new', 1)
             self.writer.writePush('constant', len(value))
+            self.writer.writeCall('String.new', 1)
             for letter in value:
-                self.writer.writePush('String.appendChar', 2)
                 self.writer.writePush('constant', ord(letter))
-        elif (self.nextValueIn(self.keywordConstant)):
+                self.writer.writeCall('String.appendChar', 2)
+        elif self.nextValueIn(self.keywordConstant):
             value = self.advance()[1]  # get keywordConstant
             if value == "this":
                 self.writer.writePush('pointer', 0)
