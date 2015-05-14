@@ -44,7 +44,7 @@ class JackTokenizer:
     symbols_re = '[' + re.escape('|'.join(SymbolsCodes)) + ']'
     numbers_re = r'\d+'
     strings_re = r'"[^"\n]*"'
-    ids_re = r'[\w\-]+'
+    ids_re = r'[\w]+'
     word = re.compile(keywords_re + '|' + symbols_re + '|' + numbers_re + '|' + strings_re + '|' + ids_re)
 
     def split(self, line):

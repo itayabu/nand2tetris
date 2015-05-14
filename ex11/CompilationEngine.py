@@ -94,13 +94,13 @@ class CompilationEngine:
             #self.writeNonTerminalEnd()
 
     def writeClassVarDec(self):
-        kind = self.advance()[2]  # get 'static' or 'field'
-        type = self.advance()[2]  # get var type
-        name = self.advance()[2]  # get var name
+        kind = self.advance()[1]  # get 'static' or 'field'
+        type = self.advance()[1]  # get var type
+        name = self.advance()[1]  # get var name
         self.symbolTable.define(name, type, kind)
         while self.nextValueIs(","):
             self.advance()  # get ',' symbol
-            name = self.advance()  # get var name
+            name = self.advance()[1]  # get var name
             self.symbolTable.define(name, type, kind)
         self.advance()  # get ';' symbol
 
@@ -139,8 +139,8 @@ class CompilationEngine:
         return not self.nextTokenIs("symbol")
 
     def writeParam(self):
-        type = self.advance()  # get parameter type
-        name = self.advance()  # get parameter name
+        type = self.advance()[1]  # get parameter type
+        name = self.advance()[1]  # get parameter name
         self.symbolTable.define(name, type, 'var')
         if self.nextValueIs(","):
             self.advance()  # get ',' symbol
@@ -170,13 +170,13 @@ class CompilationEngine:
         compiles a var declaration.
         """
         #self.writeNonTerminalStart('varDec')
-        kind = self.advance()  # get 'var' keyword
-        type = self.advance()  # get var type
-        name = self.advance()  # get var name
+        kind = self.advance()[1]  # get 'var' keyword
+        type = self.advance()[1]  # get var type
+        name = self.advance()[1]  # get var name
         self.symbolTable.define(name, type, kind)
         while self.nextValueIs(","):
             self.advance()  # get ',' symbol
-            self.advance()  #get next var name
+            name = self.advance()[1]  #get next var name
             self.symbolTable.define(name, type, kind)
         self.advance()  # get ';' symbol
         #self.writeNonTerminalEnd()
@@ -311,7 +311,7 @@ class CompilationEngine:
         self.advance()  # get '{' symbol
         self.compileStatements()
         self.advance()  # get '}' symbol
-        if self.nextTokenIs("else"):
+        if self.nextValueIs("else"):
             self.advance()  # get 'else' keyword
             self.advance()  # get '{' symbol
             self.compileStatements()
@@ -356,6 +356,10 @@ class CompilationEngine:
             self.advance()  # get class/var name
             if self.nextValueIs("["):  # case of varName[expression]
                 self.writeArrayIndex()
+            if self.nextValueIs("("):
+                self.advance()  # get '(' symbol
+                self.compileExpressionList()
+                self.advance()  # get ')' symbol
             if self.nextValueIs("."):  # case of subroutine call
                 self.advance()  # get '.' symbol
                 self.advance()  # get subroutine name

@@ -20,10 +20,10 @@ class CompilationEngine:
         self.indent = ""
 
     def addIndent(self):
-        self.indent += "  "
+        self.indent += "    "
 
     def deleteIndent(self):
-        self.indent = self.indent[:-2]
+        self.indent = self.indent[:-4]
 
     def writeNonTerminalStart(self, rule):
         self.outputFile.write(self.indent+"<"+rule+">\n")
@@ -152,6 +152,9 @@ class CompilationEngine:
         self.advance()  # get 'var' keyword
         self.advance()  # get var type
         self.advance()  # get var name
+        while self.nextValueIs(","):
+            self.advance()  # get ',' symbol
+            self.advance()  # get var name
         self.advance()  # get ';' symbol
         self.writeNonTerminalEnd()
 
@@ -270,7 +273,7 @@ class CompilationEngine:
         self.advance()  # get '{' symbol
         self.compileStatements()
         self.advance()  # get '}' symbol
-        if self.nextTokenIs("else"):
+        if self.nextValueIs("else"):
             self.advance()  # get 'else' keyword
             self.advance()  # get '{' symbol
             self.compileStatements()
@@ -300,6 +303,10 @@ class CompilationEngine:
             self.advance()  # get class/var name
             if self.nextValueIs("["):  # case of varName[expression]
                 self.writeArrayIndex()
+            if self.nextValueIs("("):
+                self.advance()  # get '(' symbol
+                self.compileExpressionList()
+                self.advance()  # get ')' symbol
             if self.nextValueIs("."):  # case of subroutine call
                 self.advance()  # get '.' symbol
                 self.advance()  # get subroutine name
