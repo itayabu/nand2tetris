@@ -23,11 +23,28 @@ class JackTokenizer:
 
     def removeComments(self):
         """ Removes comments from the file string """
-        # Order is (technically) significant: /* Comment about comment: // comment! */
-        self.lines = re.sub('\/\*(\*)+([^*\/][^*]*\*+)*\/', '', self.lines) # Remove /** */ comments
-        self.lines = re.sub('(\/\*)[^*\/]*(\*\/)', '', self.lines) # Remove /* */ comments
-        self.lines = re.sub(r'//.*', '', self.lines)  # Remove single line comments
-        self.lines = str.strip(self.lines)  # Strip
+        currentIndex = 0
+        filteredText = ''
+        endIndex = 0
+        while currentIndex < len(self.lines):
+            currentChar = self.lines[currentIndex]
+            if currentChar == "\"":
+                endIndex = self.lines.find("\"", currentIndex+1)
+                filteredText += self.lines[currentIndex:endIndex+1]
+                currentIndex = endIndex + 1
+            elif currentChar == "/":
+                if self.lines[currentIndex + 1] == "/":
+                    endIndex = self.lines.find("\n", currentIndex + 1)
+                    currentIndex = endIndex + 1
+                    filteredText += " "
+                elif self.lines[currentIndex + 1] == "*":
+                    endIndex = self.lines.find("*/", currentIndex + 1)
+                    currentIndex = endIndex + 2
+                    filteredText += " "
+            else:
+                filteredText += self.lines[currentIndex]
+                currentIndex += 1
+        self.lines = filteredText
         return
 
     def tokenize(self):
@@ -40,6 +57,8 @@ class JackTokenizer:
         elif re.match(self.stringsRegex, word) != None:  return ("stringConstant", word[1:-1])
         else:                                            return ("identifier", word)
 
+
+    # keywordsRegex = '(class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return)(?=[ ;(])'
     keywordsRegex = '|'.join(KeywordsCodes)
     symbolsRegex = '[' + re.escape('|'.join(SymbolsCodes)) + ']'
     integerRegex = r'\d+'

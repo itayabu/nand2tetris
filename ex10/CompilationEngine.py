@@ -115,7 +115,7 @@ class CompilationEngine:
     def compileParameterList(self):
         """
         compiles a (possibly empty) parameter
-        list, not including the enclosing “()”.
+        list, not including the enclosing "()"
         """
         self.writeNonTerminalStart('parameterList')
         while self.existParameter():
@@ -161,7 +161,7 @@ class CompilationEngine:
     def compileStatements(self):
         """
         compiles a sequence of statements, not
-        including the enclosing “{}”.
+        including the enclosing "{}".
         """
         self.writeNonTerminalStart('statements')
         while self.existStatement():
