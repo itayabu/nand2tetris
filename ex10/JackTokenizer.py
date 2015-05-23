@@ -19,6 +19,7 @@ class JackTokenizer:
         self.lines = self.file.read()  # Read code
         self.removeComments()  # Remove comments
         self.tokens = self.tokenize()
+        # print(self.tokens)
         self.tokens = self.replaceSymbols()
 
     def removeComments(self):
@@ -41,6 +42,9 @@ class JackTokenizer:
                     endIndex = self.lines.find("*/", currentIndex + 1)
                     currentIndex = endIndex + 2
                     filteredText += " "
+                else:
+                    filteredText += self.lines[currentIndex]
+                    currentIndex += 1
             else:
                 filteredText += self.lines[currentIndex]
                 currentIndex += 1
@@ -58,8 +62,8 @@ class JackTokenizer:
         else:                                            return ("identifier", word)
 
 
-    # keywordsRegex = '(class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return)(?=[ ;(])'
-    keywordsRegex = '|'.join(KeywordsCodes)
+    keywordsRegex = 'class(?![a-zA-Z0-9_])|var(?![a-zA-Z0-9_])|constructor(?![a-zA-Z0-9_])|function(?![a-zA-Z0-9_])|method(?![a-zA-Z0-9_])|field(?![a-zA-Z0-9_])|static(?![a-zA-Z0-9_])|int(?![a-zA-Z0-9_])|char(?![a-zA-Z0-9_])|boolean(?![a-zA-Z0-9_])|void(?![a-zA-Z0-9_])|true(?![a-zA-Z0-9_])|false(?![a-zA-Z0-9_])|null(?![a-zA-Z0-9_])|this(?![a-zA-Z0-9_])|let(?![a-zA-Z0-9_])|do(?![a-zA-Z0-9_])|if(?![a-zA-Z0-9_])|else(?![a-zA-Z0-9_])|while(?![a-zA-Z0-9_])|return(?![a-zA-Z0-9_])'
+    # keywordsRegex = '|'.join(KeywordsCodes)
     symbolsRegex = '[' + re.escape('|'.join(SymbolsCodes)) + ']'
     integerRegex = r'\d+'
     stringsRegex = r'"[^"\n]*"'
