@@ -1,6 +1,5 @@
 __author__ = 'Gil'
 
-import Node
 
 class SymbolTable:
 
@@ -9,19 +8,31 @@ class SymbolTable:
         self.globalScope = {}
         self.subroutinesScope = {}
         self.currScope = self.globalScope
+        self.varCounter = 0
+        self.argCounter = 0
+        self.ifCounter = 0
+        self.whileCounter = 0
 
     def startSubroutine(self, name):
-        """Starts a new subroutine scope (i.e. erases all names in the previous subroutine’s scope.)"""
+        """Starts a new subroutine scope (i.e. erases all names in the previous subroutine's scope.)"""
         self.subroutinesScope[name] = {}
+        self.varCounter = 0
+        self.argCounter = 0
+        self.ifCounter = 0
+        self.whileCounter = 0
 
     def define(self, name, type, kind):
         """Defines a new identifier of a given name, type, and kind and assigns it a running
         index. STATIC and FIELD identifiers have a class scope, while ARG and VAR
         identifiers have a subroutine scope. """
-        if kind == "STATIC" or kind == "FIELD":
+        if kind == "static" or kind == "field":
             self.globalScope[name] = (type, kind, len(self.globalScope))
-        else:
-            self.currScope[name] = (type, kind, len(self.currScope))
+        elif kind == 'arg':
+            self.currScope[name] = (type, kind, self.argCounter)
+            self.argCounter += 1
+        elif kind == 'var':
+            self.currScope[name] = (type, kind, self.varCounter)
+            self.varCounter += 1
 
     def globalsCount(self, kind):
         return len([v for (k, v) in self.globalScope.items() if v[1] == kind])

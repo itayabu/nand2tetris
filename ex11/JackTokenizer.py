@@ -16,50 +16,59 @@ class JackTokenizer:
         """
         self.file = open(file)
         self.currToken = ""
-        self.lines = self.file.read() # Read code
-        self.removeComments() # Remove comments
+        self.lines = self.file.read()  # Read code
+        self.removeComments()  # Remove comments
         self.tokens = self.tokenize()
-        self.tokens = self.replaceSymbols()
 
     def removeComments(self):
         """ Removes comments from the file string """
-        # Order is (technically) significant: /* Comment about comment: // comment! */
-        self.lines = re.sub('\/\*(\*)+([^*\/][^*]*\*+)*\/', '', self.lines) # Remove /** */ comments
-        self.lines = re.sub('(\/\*)[^*\/]*(\*\/)', '', self.lines) # Remove /* */ comments
-        self.lines = re.sub(r'//.*', '', self.lines)  # Remove single line comments
-        self.lines = str.strip(self.lines) # Strip
+        currentIndex = 0
+        filteredText = ''
+        endIndex = 0
+        while currentIndex < len(self.lines):
+            currentChar = self.lines[currentIndex]
+            if currentChar == "\"":
+                endIndex = self.lines.find("\"", currentIndex+1)
+                filteredText += self.lines[currentIndex:endIndex+1]
+                currentIndex = endIndex + 1
+            elif currentChar == "/":
+                if self.lines[currentIndex + 1] == "/":
+                    endIndex = self.lines.find("\n", currentIndex + 1)
+                    currentIndex = endIndex + 1
+                    filteredText += " "
+                elif self.lines[currentIndex + 1] == "*":
+                    endIndex = self.lines.find("*/", currentIndex + 1)
+                    currentIndex = endIndex + 2
+                    filteredText += " "
+                else:
+                    filteredText += self.lines[currentIndex]
+                    currentIndex += 1
+            else:
+                filteredText += self.lines[currentIndex]
+                currentIndex += 1
+        self.lines = filteredText
         return
 
     def tokenize(self):
         return [self.token(word) for word in self.split(self.lines)]
 
     def token(self, word):
-        if   re.match(self.keywords_re, word) != None: return ("keyword", word)
-        elif re.match(self.symbols_re, word) != None:  return ("symbol", word)
-        elif re.match(self.numbers_re, word) != None:  return ("integerConstant", word)
-        elif re.match(self.strings_re, word) != None:  return ("stringConstant", word[1:-1])
-        else:                                          return ("identifier", word)
+        if   re.match(self.keywordsRegex, word) != None: return ("keyword", word)
+        elif re.match(self.symbolsRegex, word) != None:  return ("symbol", word)
+        elif re.match(self.integerRegex, word) != None:  return ("integerConstant", word)
+        elif re.match(self.stringsRegex, word) != None:  return ("stringConstant", word[1:-1])
+        else:                                            return ("identifier", word)
 
-    keywords_re = '|'.join(KeywordsCodes)
-    symbols_re = '[' + re.escape('|'.join(SymbolsCodes)) + ']'
-    numbers_re = r'\d+'
-    strings_re = r'"[^"\n]*"'
-    ids_re = r'[\w]+'
-    word = re.compile(keywords_re + '|' + symbols_re + '|' + numbers_re + '|' + strings_re + '|' + ids_re)
+
+    keywordsRegex = '(?!\w)|'.join(KeywordsCodes) + '(?!\w)'
+    symbolsRegex = '[' + re.escape('|'.join(SymbolsCodes)) + ']'
+    integerRegex = r'\d+'
+    stringsRegex = r'"[^"\n]*"'
+    identifiersRegex = r'[\w]+'
+    word = re.compile(keywordsRegex + '|' + symbolsRegex + '|' + integerRegex + '|' + stringsRegex + '|' + identifiersRegex)
 
     def split(self, line):
         return self.word.findall(line)
-
-    def replaceSymbols(self):
-        return [self.replace(pair) for pair in self.tokens]
-
-    def replace(self, pair):
-        token, value = pair
-        if   value == '<': return (token, '&lt;')
-        elif value == '>': return (token, '&gt;')
-        elif value == '"': return (token, '&quot;')
-        elif value == '&': return (token, '&amp;')
-        else:              return (token, value)
 
     def hasMoreTokens(self):
         """

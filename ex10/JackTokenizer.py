@@ -62,8 +62,7 @@ class JackTokenizer:
         else:                                            return ("identifier", word)
 
 
-    keywordsRegex = 'class(?![a-zA-Z0-9_])|var(?![a-zA-Z0-9_])|constructor(?![a-zA-Z0-9_])|function(?![a-zA-Z0-9_])|method(?![a-zA-Z0-9_])|field(?![a-zA-Z0-9_])|static(?![a-zA-Z0-9_])|int(?![a-zA-Z0-9_])|char(?![a-zA-Z0-9_])|boolean(?![a-zA-Z0-9_])|void(?![a-zA-Z0-9_])|true(?![a-zA-Z0-9_])|false(?![a-zA-Z0-9_])|null(?![a-zA-Z0-9_])|this(?![a-zA-Z0-9_])|let(?![a-zA-Z0-9_])|do(?![a-zA-Z0-9_])|if(?![a-zA-Z0-9_])|else(?![a-zA-Z0-9_])|while(?![a-zA-Z0-9_])|return(?![a-zA-Z0-9_])'
-    # keywordsRegex = '|'.join(KeywordsCodes)
+    keywordsRegex = '(?!\w)|'.join(KeywordsCodes) + '(?!\w)'
     symbolsRegex = '[' + re.escape('|'.join(SymbolsCodes)) + ']'
     integerRegex = r'\d+'
     stringsRegex = r'"[^"\n]*"'
