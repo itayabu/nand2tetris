@@ -223,6 +223,8 @@ class CompilationEngine:
             lastName = self.advance()[1]  # get subroutine name
             if firstName in self.symbolTable.currScope:
                 fullName = self.symbolTable.typeOf(firstName) + '.' + lastName
+                self.writePush(firstName)
+                nLocals += 1
             else:
                 fullName = firstName + '.' + lastName
                 # self.writer.writePush('argument', 0)
