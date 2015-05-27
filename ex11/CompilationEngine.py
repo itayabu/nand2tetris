@@ -155,7 +155,7 @@ class CompilationEngine:
             self.writer.writePush('constant', globalVars)
             self.writer.writeCall('Memory.alloc', 1)
             self.writer.writePop('pointer', 0)
-        if self.className + '.new' in self.symbolTable.subroutinesScope:
+        if self.className + '.new' != name and 'main' not in name:
             self.writer.writePush('argument', 0)
             self.writer.writePop('pointer', 0)
         self.compileStatements()
@@ -221,7 +221,7 @@ class CompilationEngine:
         if self.nextValueIs("."):  # case of className.subroutineName
             self.advance()  # get '.' symbol
             lastName = self.advance()[1]  # get subroutine name
-            if firstName in self.symbolTable.currScope:
+            if firstName in self.symbolTable.currScope or firstName in self.symbolTable.globalScope:
                 fullName = self.symbolTable.typeOf(firstName) + '.' + lastName
                 self.writePush(firstName)
                 nLocals += 1
@@ -434,10 +434,14 @@ class CompilationEngine:
                 self.advance()  # get ')' symbol
             if self.nextValueIs("."):  # case of subroutine call
                 self.advance()  # get '.' symbol
-                name = name + '.' + self.advance()[1]  # get subroutine name
+                secondName = self.advance()[1]  # get subroutine name
+                name = name + '.' + secondName
                 self.advance()  # get '(' symbol
                 nLocals = self.compileExpressionList()
                 self.advance()  # get ')' symbol
+                # if self.className + '.new' in self.symbolTable.subroutinesScope:
+                #     self.writer.writePush('argument', 0)
+                #     self.writer.writePop('pointer', 0)
                 self.writer.writeCall(name, nLocals)
             else:
                 if name in self.symbolTable.currScope:

@@ -43,17 +43,32 @@ class SymbolTable:
 
     def typeOf(self, name):
         """Returns the type of the named identifier in the current scope."""
-        return self.currScope[name][0] if (name in self.currScope) else "NONE"
+        if name in self.currScope:
+            return self.currScope[name][0]
+        if name in self.globalScope:
+            return self.globalScope[name][0]
+        else:
+            return "NONE"
 
     def kindOf(self, name):
         """Returns the kind of the named identifier in
         the current scope. Returns NONE if the
         identifier is unknown in the current scope."""
-        return self.currScope[name][1] if (name in self.currScope) else "NONE"
+        if name in self.currScope:
+            return self.currScope[name][1]
+        if name in self.globalScope:
+            return self.globalScope[name][1]
+        else:
+            return "NONE"
 
     def indexOf(self, name):
         """Returns the index assigned to named identifier."""
-        return self.currScope[name][2] if (name in self.currScope) else "NONE"
+        if name in self.currScope:
+            return self.currScope[name][2]
+        if name in self.globalScope:
+            return self.globalScope[name][2]
+        else:
+            return "NONE"
 
     def setScope(self, name):
         if name == 'global':
