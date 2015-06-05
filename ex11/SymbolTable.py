@@ -10,6 +10,8 @@ class SymbolTable:
         self.currScope = self.globalScope
         self.varCounter = 0
         self.argCounter = 0
+        self.fieldCounter = 0
+        self.staticCounter = 0
         self.ifCounter = 0
         self.whileCounter = 0
 
@@ -25,8 +27,12 @@ class SymbolTable:
         """Defines a new identifier of a given name, type, and kind and assigns it a running
         index. STATIC and FIELD identifiers have a class scope, while ARG and VAR
         identifiers have a subroutine scope. """
-        if kind == "static" or kind == "field":
-            self.globalScope[name] = (type, kind, len(self.globalScope))
+        if kind == "static":
+            self.globalScope[name] = (type, kind, self.staticCounter)
+            self.staticCounter += 1
+        elif kind == "field":
+            self.globalScope[name] = (type, kind, self.fieldCounter)
+            self.fieldCounter += 1
         elif kind == 'arg':
             self.currScope[name] = (type, kind, self.argCounter)
             self.argCounter += 1

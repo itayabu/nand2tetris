@@ -20,6 +20,7 @@ class CompilationEngine:
         self.writer = VMWriter.VMWriter(output)
         self.symbolTable = SymbolTable.SymbolTable()
         self.className = ''
+        self.name = ''
         #self.parsedRules = []
         #self.outputFile = open(output, 'w')
         #self.indent = ""
@@ -57,6 +58,12 @@ class CompilationEngine:
 
     def nextTokenIs(self, tok):
         token, value = self.tokenizer.peek()
+        return token == tok
+
+    def doublePeak(self, tok):
+        token, value = self.tokenizer.doublePeek()
+        self.writer.writeArithmetic(token)
+        self.writer.writeArithmetic(value)
         return token == tok
 
     def compileClass(self):
@@ -110,24 +117,28 @@ class CompilationEngine:
         or constructor.
         """
         #self.writeNonTerminalStart('subroutineDec')
-        self.advance()  # get subroutine type / 'constructor'
+        funcType = self.advance()  # get subroutine type / 'constructor'
+        #TODO: maybe save return type
         self.advance()  # get subroutine return type / class name
-        name = self.className + '.' + self.advance()[1]  # get subroutine name / 'new'
-        self.symbolTable.startSubroutine(name)
-        self.symbolTable.setScope(name)
+        #TODO: save the function as a var? ('this',className, ARG)
+        self.name = self.className + '.' + self.advance()[1]  # get subroutine name / 'new'
+        self.symbolTable.startSubroutine(self.name)
+        self.symbolTable.setScope(self.name)
         self.advance()  # get '(' symbol
-        self.compileParameterList()
+        self.compileParameterList(funcType)
         self.advance()  # get ')' symbol
-        self.compileSubroutineBody(name)
+        self.compileSubroutineBody(funcType)
         #self.writeNonTerminalEnd()
 
 
-    def compileParameterList(self):
+    def compileParameterList(self,funcType):
         """
         compiles a (possibly empty) parameter
         list, not including the enclosing "()".
         """
         #self.writeNonTerminalStart('parameterList')
+        if funcType[1] == "method":
+            self.symbolTable.define("this", "self", 'arg')
         while self.existParameter():
             self.writeParam()
             #self.writeNonTerminalEnd()
@@ -143,25 +154,28 @@ class CompilationEngine:
             self.advance()  # get ',' symbol
 
 
-    def compileSubroutineBody(self, name):
+    def compileSubroutineBody(self, funcType):
         #self.writeNonTerminalStart('subroutineBody')
         self.advance()  # get '{' symbol
         while self.existVarDec():
             self.compileVarDec()
         nVars = self.symbolTable.varCount('var')
-        self.writer.writeFunction(name, nVars)
-        if '.new' in name:
-            globalVars = self.symbolTable.globalsCount('field')
-            self.writer.writePush('constant', globalVars)
-            self.writer.writeCall('Memory.alloc', 1)
-            self.writer.writePop('pointer', 0)
-        if self.className + '.new' != name and 'main' not in name:
-            self.writer.writePush('argument', 0)
-            self.writer.writePop('pointer', 0)
+        self.writer.writeFunction(self.name, nVars)
+        self.loadPointer(funcType)
         self.compileStatements()
         self.advance()  # get '}' symbol
         self.symbolTable.setScope('global')
         #self.writeNonTerminalEnd()
+
+    def loadPointer(self, funcType):
+        if funcType[1] == "method":
+            self.writer.writePush('argument', 0)
+            self.writer.writePop('pointer', 0)
+        if funcType[1] == 'constructor':
+            globalVars = self.symbolTable.globalsCount('field')
+            self.writer.writePush('constant', globalVars)
+            self.writer.writeCall('Memory.alloc', 1)
+            self.writer.writePop('pointer', 0)
 
     def existVarDec(self):
         return self.nextValueIs("var")
@@ -181,7 +195,7 @@ class CompilationEngine:
             self.symbolTable.define(name, type, kind)
         self.advance()  # get ';' symbol
         #self.writeNonTerminalEnd()
-
+    #############################################################################################################
     def compileStatements(self):
         """
         compiles a sequence of statements, not
@@ -194,7 +208,7 @@ class CompilationEngine:
             elif self.nextValueIs("if"):     self.compileIf()
             elif self.nextValueIs("while"):  self.compileWhile()
             elif self.nextValueIs("return"): self.compileReturn()
-        #self.writeNonTerminalEnd()
+            #self.writeNonTerminalEnd()
 
     def existStatement(self):
         return (self.nextValueIs("do") \
@@ -212,7 +226,6 @@ class CompilationEngine:
         self.compileSubroutineCall()
         self.writer.writePop('temp', 0)
         self.advance()  # get ';' symbol
-        #self.writeNonTerminalEnd()
 
     def compileSubroutineCall(self):
         firstName = lastName = fullName = ''
@@ -227,18 +240,13 @@ class CompilationEngine:
                 nLocals += 1
             else:
                 fullName = firstName + '.' + lastName
-                # self.writer.writePush('argument', 0)
-                # self.writer.writePop('pointer', 0)
         else:
             self.writer.writePush('pointer', 0)
             nLocals += 1
             fullName = self.className + '.' + firstName
         self.advance()  # get '(' symbol
         nLocals += self.compileExpressionList()
-        # if firstName in self.symbolTable.currScope:
         self.writer.writeCall(fullName, nLocals)
-        # else:
-        #     self.writer.writeCall(fullName, 1)
         self.advance()  # get ')' symbol
 
     def compileExpressionList(self):
@@ -260,22 +268,33 @@ class CompilationEngine:
         """
         #self.writeNonTerminalStart('letStatement')
         self.advance()  # get 'let' keyword
+        isArray = False
         name = self.advance()[1]  # get var name
         if self.nextValueIs("["):  # case of varName[expression]
-            self.writeArrayIndex()
-            if name in self.symbolTable.currScope:
-                if self.symbolTable.kindOf(name) == 'var':
-                    self.writer.writePush('local', self.symbolTable.indexOf(name))
-                elif self.symbolTable.kindOf(name) == 'arg':
-                    self.writer.writePush('argument', self.symbolTable.indexOf(name))
-            else:
-                self.writer.writePush('this', self.symbolTable.globalScope[name][2])
-            self.writer.writeArithmetic('add')
+            isArray = True
+            self.compileArrayIndex(name)
         self.advance()  # get '='
         self.compileExpression()
-        self.writePop(name)
+        if isArray == True:
+            self.writer.writePop("temp", 0)
+            self.writer.writePop("pointer", 1)
+            self.writer.writePush("temp", 0)
+            self.writer.writePop("that", 0)
+        else:
+            self.writePop(name)
         self.advance()  # get ';' symbol
-        #self.writeNonTerminalEnd()
+
+    def compileArrayIndex(self, name):
+        self.writeArrayIndex()#TODO: check if need to be beroe "add"
+        if name in self.symbolTable.currScope:
+            if self.symbolTable.kindOf(name) == 'var':
+                self.writer.writePush('local', self.symbolTable.indexOf(name))
+            elif self.symbolTable.kindOf(name) == 'arg':
+                self.writer.writePush('argument', self.symbolTable.indexOf(name))
+        else:
+            self.writer.writePush('this', self.symbolTable.globalScope[name][2])
+        self.writer.writeArithmetic('add')
+
 
     def writeArrayIndex(self):
         self.advance()  # get '[' symbol
@@ -296,7 +315,6 @@ class CompilationEngine:
         self.writer.writeArithmetic('not')
         self.writer.writeIf('WHILE_END' + whileCounter)
         self.advance()  # get ')' symbol
-        #self.whileCounter += 1
         self.advance()  # get '{' symbol
         self.compileStatements()
         self.writer.writeGoto('WHILE_EXP' + whileCounter)
@@ -315,11 +333,9 @@ class CompilationEngine:
             returnEmpty = False
             self.compileExpression()
         if (returnEmpty):
-            # self.writer.writePop('temp', 0)
             self.writer.writePush('constant', 0)
         self.writer.writeReturn()
         self.advance()  # get ';' symbol
-        #self.writeNonTerminalEnd()
 
     def existExpression(self):
         return self.existTerm()
@@ -330,11 +346,12 @@ class CompilationEngine:
                or self.nextTokenIs("identifier") or (self.nextValueIn(self.unaryOp)) \
                or (self.nextValueIn(self.keywordConstant)) or (self.nextValueIs('('))
 
+    #TODO: didnt check it yet
     def compileIf(self):
         """
-        compiles an if statement, possibly
-        with a trailing else clause.
-        """
+                compiles an if statement, possibly
+                with a trailing else clause.
+                """
         #self.writeNonTerminalStart('ifStatement')
         self.advance()  # get 'if' keyword
         self.advance()  # get '(' symbol
@@ -358,7 +375,7 @@ class CompilationEngine:
             self.writer.writeLabel('IF_END' + str(currentCounter))
         else:
             self.writer.writeLabel('IF_FALSE' + str(currentCounter))
-        #self.writeNonTerminalEnd()
+            #self.writeNonTerminalEnd()
 
     def compileExpression(self):
         """
@@ -387,12 +404,12 @@ class CompilationEngine:
                 self.writer.writeArithmetic('lt')
             elif op == '>':
                 self.writer.writeArithmetic('gt')
-                #self.writeNonTerminalEnd()
 
     def compileTerm(self):
         """
         compiles a term
         """
+        array = False
         #self.writeNonTerminalStart('term')
         if self.nextTokenIs("integerConstant"):
             value = self.advance()[1]  # get constant
@@ -415,38 +432,30 @@ class CompilationEngine:
         elif self.nextTokenIs("identifier"):
             name = self.advance()[1]  # get class/var name
             if self.nextValueIs("["):  # case of varName[expression]
-                self.writeArrayIndex()
-                if name in self.symbolTable.currScope:
-                    if self.symbolTable.kindOf(name) == 'var':
-                        # if self.symbolTable.typeOf(name) == 'Array':
-                        #     self.writer.writePop('pointer', str(1))
-                        #     self.writer.writePush('that', str(0))
-                        # else:
-                        self.writer.writePush('local', self.symbolTable.indexOf(name))
-                    elif self.symbolTable.kindOf(name) == 'arg':
-                        self.writer.writePush('argument', self.symbolTable.indexOf(name))
-                else:
-                    self.writer.writePush('this', self.symbolTable.globalScope[name][2])
-                self.writer.writeArithmetic('add')
+                array = True
+                self.compileArrayIndex(name)
             if self.nextValueIs("("):
                 self.advance()  # get '(' symbol
                 self.compileExpressionList()
                 self.advance()  # get ')' symbol
             if self.nextValueIs("."):  # case of subroutine call
                 self.advance()  # get '.' symbol
-                secondName = self.advance()[1]  # get subroutine name
-                name = name + '.' + secondName
+                lastName = self.advance()[1]  # get subroutine name
+                if name in self.symbolTable.currScope or name in self.symbolTable.globalScope:
+                    name = self.symbolTable.typeOf(name) + '.' + lastName
+                    self.writePush(name)
+                    nLocals += 1
+                else:
+                    name = name + '.' + lastName
                 self.advance()  # get '(' symbol
                 nLocals = self.compileExpressionList()
                 self.advance()  # get ')' symbol
-                # if self.className + '.new' in self.symbolTable.subroutinesScope:
-                #     self.writer.writePush('argument', 0)
-                #     self.writer.writePop('pointer', 0)
                 self.writer.writeCall(name, nLocals)
             else:
                 if name in self.symbolTable.currScope:
                     if self.symbolTable.kindOf(name) == 'var':
-                        if self.symbolTable.typeOf(name) == 'Array':
+                        #TODO: what is going on here??!?
+                        if array:
                             self.writer.writePop('pointer', 1)
                             self.writer.writePush('that', 0)
                         else:

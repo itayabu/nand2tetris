@@ -92,6 +92,9 @@ class JackTokenizer:
         else:
             return ("ERROR", 0)
 
+    def doublePeek(self):
+        return self.tokens[1]
+
     def getToken(self):
         """
         returns the type of the current token
