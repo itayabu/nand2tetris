@@ -15,12 +15,12 @@ def main():
         for file in files:
             if file.endswith('.jack'):
                 fileName = file.split(".")[0]
-                comp = CompilationEngine.CompilationEngine(userInput + file, userInput + fileName + ".vma")
+                comp = CompilationEngine.CompilationEngine(userInput + file, userInput + fileName + ".vm")
                 comp.compileClass()
     #Case input is file, just parse it
     elif os.path.isfile(userInput):
         userInput = userInput.split(".")[0]
-        comp = CompilationEngine.CompilationEngine(userInput + ".jack", userInput + ".vma")
+        comp = CompilationEngine.CompilationEngine(userInput + ".jack", userInput + ".vm")
         comp.compileClass()
     #Raise an exception
     else:
