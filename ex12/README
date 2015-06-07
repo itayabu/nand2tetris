@@ -1,0 +1,20 @@
+itayabu, giltal1
+==========================================================
+Itay Abulafia, ID 303033286, itay.abu@mail.huji.ac.il
+Gil Tal, ID 30246979, gil.tal1@mail.huji.ac.il
+==========================================================
+
+                project 12 - The Operating System
+                ---------------------------------
+
+Submitted Files:
+----------------
+README- This file.
+Array.jack - Represents an array. Can be used to hold any type of object.
+Keyboard.jack - A library for handling user input from the keyboard.
+Math.jack - A basic math library.
+Memory.jack - Memory operations library.
+Output.jack - Handles writing characters to the screen.
+Screen.jack - Graphic screen library.
+String.jack - Represents a String object. Implements the String type.
+Sys.jack - A library of basic system services.
