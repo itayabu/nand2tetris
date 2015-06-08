@@ -33,7 +33,7 @@ class Math {
     /** Returns the absolute value of x. */
     function int abs(int x) {
 		if (x < 0) {
-			let x = ~x;
+			let x = -x;
 		}
 		return x;
     }
@@ -60,50 +60,54 @@ class Math {
 
     /** Returns the integer part of x/y. */
     function int divide(int x, int y) {
-      var int q, nx, ny;
+        var int q;
+        var int result;
+	   var int negX; 
+	   var int negY;
+        
+        let negX = x < 0;
+        let negY = y < 0;
+        let x = Math.abs(x);
+        let y = Math.abs(y);
 
-      let nx = Math.abs(x);
-      let ny = Math.abs(y);
-
-      if (ny > nx) {
-        return 0;
-      }
-
-      let q = Math.divide(nx, 2 * ny);
-      if ((nx - (2 * q * ny)) < ny) {
-        if ((x < 0 & y > 0) | (x > 0 & y < 0)) {
-          let q = -q;
+        if(y > x) {
+            return 0;
         }
-        return 2 * q;
-      } else {
-        if ((x < 0 & y > 0) | (x > 0 & y < 0)) {
-          let q = -q;
+        let q = Math.divide(x, y + y);
+        if(x - (Math.multiply(q + q, y)) < y) {
+            let result = q + q;
         }
-        return (2 * q) + 1;
-      }
+        else {
+            let result = q + q + 1;
+        }
+        
+        if(negX = negY) {
+            return result;
+        }
+        else {
+            return -result;
+        }
     }
 
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
-		var int low;
-		var int high;
-		var int med;
-		let low = 0;
-		let high = 181;
-		while(low < high)
-		{
-			let med = Math.divide(low + high, 2);
-			if (med + med > x)
-			{
-				let high = med - 1;
-			}
-			else
-			{
-				let low = med;
-			}
-		}
-		return low;
+        var int result;
+	   var int j;
+        var int checked;
+        var int squared;
+        
+        let result = 0;
+        let j = 7;
+        while(~(j < 0)) {
+            let checked = result + twoToThe[j];
+            let squared = Math.multiply(checked, checked);
+            if(~(squared > x) & (squared > 0)) {
+                let result = checked;
+            }
+            let j = j - 1;
+        }
+        return result;
     }
 
     /** Returns the greater number. */
