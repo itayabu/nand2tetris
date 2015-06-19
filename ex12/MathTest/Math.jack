@@ -24,7 +24,11 @@ class Math {
 		}
 		return;
     }
-
+	
+	function int two_to_the(int power) {
+		return twoToThe[power];
+	}
+	
 	/** Returns true if the j'th bit of the integer x is 1, and false otherwise */
     function boolean bit(int x, int j) {
 		return (~(x & twoToThe[j] = 0));
