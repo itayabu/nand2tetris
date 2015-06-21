@@ -16,11 +16,9 @@ class Math {
 		let j = 0;
 		let twoToThe = Array.new(16);
 		let twoToThe[j] = 1;
-		while (j < 16)
-		{
+		while (j < 16) {
 			let j = j + 1;
 			let twoToThe[j] = twoToThe[j - 1] + twoToThe[j - 1];
-			
 		}
 		return;
     }
@@ -50,10 +48,8 @@ class Math {
 		let j = 0;
 		let sum = 0;
 		let shiftedX = x;
-		while (j < 16)
-		{
-			if (Math.bit(y,j) = true)
-			{
+		while (j < 16) { //each number is 16 bits
+			if (Math.bit(y, j) = true) {
 				let sum = sum + shiftedX;
 			}
 			let shiftedX = shiftedX + shiftedX;
@@ -64,8 +60,8 @@ class Math {
 
     /** Returns the integer part of x/y. */
     function int divide(int x, int y) {
-        var int q;
-        var int result;
+       var int q;
+       var int result;
 	   var int negX; 
 	   var int negY;
         
@@ -97,7 +93,7 @@ class Math {
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
         var int result;
-	   var int j;
+		var int j;
         var int checked;
         var int squared;
         
@@ -116,24 +112,20 @@ class Math {
 
     /** Returns the greater number. */
     function int max(int a, int b) {
-		if (a > b)
-		{
+		if (a > b) {
 			return a;
 		}
-		else
-		{
+		else {
 			return b;
 		}
     }
 
     /** Returns the smaller number. */
     function int min(int a, int b) {
-		if (a < b)
-		{
+		if (a < b) {
 			return a;
 		}
-		else
-		{
+		else {
 			return b;
 		}
     }

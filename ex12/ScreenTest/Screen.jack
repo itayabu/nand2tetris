@@ -18,14 +18,14 @@ class Screen {
 		let screen = 16384;
 		let whitePixel = false;
 		let blackPixel = true;
-		let color = whitePixel;
+		let color = blackPixel;
 		return;
 	}
 
     /** Erases the whole screen. */
     function void clearScreen() {
     	var int i;
-		let i = screen;
+		let i = 0;
 		while (i < 8192) {
 			let screen[i] = whitePixel;
 		}

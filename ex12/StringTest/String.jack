@@ -14,6 +14,9 @@ class String {
 	
     /** Constructs a new empty String with a maximum length of maxLength. */
     constructor String new(int maxLength) {
+		if( maxLength = 0 ) {
+            let maxLength = 1;
+        }
 		let str = Array.new(maxLength);
 		let length = 0;
 		let max = maxLength;
@@ -22,7 +25,7 @@ class String {
 
     /** De-allocates the string and frees its space. */
     method void dispose() {
-		do Array.deAlloc(str);
+		do Array.dispose(str);
 		return;
     }
 
@@ -45,14 +48,18 @@ class String {
     /** Appends the character c to the end of this String.
      *  Returns this string as the return value. */
     method String appendChar(char c) {
-		let str[length] = c;
-		let length = length + 1;
-		return str;
+		if (length < max) {
+			let str[length] = c;
+			let length = length + 1;
+		}
+		return this;
     }
 
     /** Erases the last character from this String. */
     method void eraseLastChar() {
-		let length = length - 1;
+		if (length > 0) {
+			let length = length - 1;
+		}
 		return;
     }
 
@@ -61,23 +68,39 @@ class String {
     method int intValue() {
 		var int i;
 		var int sum;
+		var boolean neg;
+		
 		let sum = 0;
-		let i = 0;
+		if ((length > 0) & (str[0] = 45)) { //'-' sign in ascii
+			let neg = true;
+			let i = 1;
+		}
+		else {
+			let neg = false;
+			let i = 0;
+		}
+		
 		while (i < length) {
-			if (str[i] > 48 & str[i] < 58) {
-				let sum = sum + (str[i] - 48);
-			}
-			else {
-				return sum;
+			if (str[i] > 47 & str[i] < 58) { //the char is a digit between 0 to 9 in ascii
+				let sum = (sum * 10) + (str[i] - 48);
 			}
 			let i = i + 1;
 		}
-		return sum;
+		if (neg) {
+			return -sum;
+		}
+		else {
+			return sum;
+		}
     }
 
     /** Sets this String to hold a representation of the given number. */
     method void setInt(int number) {
 		let length = 0;
+		if (number < 0) {
+			let number = -number;
+			do appendChar(45); //add leading '-'
+		}
 		do recSetInt(number);
 		return;
     }
@@ -85,18 +108,17 @@ class String {
     method void recSetInt(int number) {
 		var int mod;
 		var int div;
-		let div = number;
+
 		let div = number / 10;
-		let mod = number - div;
+		let mod = number - (div * 10);
+		
 		if (number < 10)
 		{
-			let str[length] = mod - 48;
-			let length = length + 1;
+			do appendChar(mod + 48);
 		}
 		else{
-			let str[length] = mod - 48;
-			let length = length + 1;
-			do appendChar(mod - 48);
+			do recSetInt(div);
+			do appendChar(mod + 48);
 		}
 		return;
 			
