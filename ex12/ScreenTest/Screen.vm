@@ -142,11 +142,13 @@ pop local 8
 label WHILE_EXP0
 push local 6
 push local 0
-lt
+gt
+not
 push local 7
 push local 1
-lt
-or
+gt
+not
+and
 not
 if-goto WHILE_END0
 push local 2
@@ -233,6 +235,12 @@ pop local 5
 label IF_END1
 push constant 0
 pop local 6
+push local 2
+push local 4
+lt
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
 label WHILE_EXP0
 push local 2
 push local 6
@@ -255,6 +263,31 @@ add
 pop local 6
 goto WHILE_EXP0
 label WHILE_END0
+goto IF_END2
+label IF_FALSE2
+label WHILE_EXP1
+push local 3
+push local 6
+add
+push local 5
+lt
+not
+if-goto WHILE_END1
+push local 2
+push local 3
+push local 6
+add
+push local 4
+push local 5
+call Screen.drawLine 4
+pop temp 0
+push local 6
+push constant 1
+add
+pop local 6
+goto WHILE_EXP1
+label WHILE_END1
+label IF_END2
 push constant 0
 return
 function Screen.drawCircle 3

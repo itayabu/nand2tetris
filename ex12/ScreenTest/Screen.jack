@@ -65,26 +65,13 @@ class Screen {
 		
 		let dx = Math.abs(x2 - x1);
 		let dy = Math.abs(y2 - y1);
-		if (x1 < x2) {
-			let startX = x1;
-			let endX = x2;
-		}
-		else {
-			let startX = x2;
-			let endX = x1;
-		}
-		if (y1 < y2) {
-			let startY = y1;
-			let endY = y2;
-		}
-		else {
-			let startY = y2;
-			let endY = y1;
-		}
+		let startX = Math.min(x1, x2);
+		let startY = Math.min(y1, y2);
+		
 		let i = 0;
 		let j = 0;
 		let proportion = 0;
-		while ((i < dx) | (j < dy)) {
+		while (~(i > dx) & ~(j > dy)) {
 			do Screen.drawPixel(startX + i, startY + j);
 			if (proportion < 0) {
 				let i = i + 1;
@@ -107,27 +94,21 @@ class Screen {
 		
 		let dx = Math.abs(x2 - x1);
 		let dy = Math.abs(y2 - y1);
-		if (x1 < x2) {
-			let startX = x1;
-			let endX = x2;
-		}
-		else {
-			let startX = x2;
-			let endX = x1;
-		}
-		if (y1 < y2) {
-			let startY = y1;
-			let endY = y2;
-		}
-		else {
-			let startY = y2;
-			let endY = y1;
-		}
+		let startX = Math.min(x1, x2);
+		let startY = Math.min(y1, y2);
 		
 		let i = 0;
-		while ((startX + i) < endX) {
-			do Screen.drawLine(startX + i, startY, endX, endY); 
-			let i = i + 1;
+		if (startX < endX) {
+			while ((startX + i) < endX) {
+				do Screen.drawLine(startX + i, startY, endX, endY); 
+				let i = i + 1;
+			}
+		}
+		else {
+			while ((startY + i) < endY) {
+				do Screen.drawLine(startX, startY + i, endX, endY); 
+				let i = i + 1;
+			}
 		}
 		return;
 	}
@@ -136,11 +117,13 @@ class Screen {
     function void drawCircle(int cx, int cy, int r) {
     	var int startY, endY;
 		var int dy;
+		var int sqrtDist;
 		let startY = cy - r;
 		let endY = cy + r;
+		let sqrtDist = Math.sqrt((r * r) - (dy * dy))
 		let dy = 0;
 		while ((startY + dy) < endY) {
-			do Screen.drawLine((cx - Math.sqrt((r * r) - (dy * dy))), (cy + dy), (cx + Math.sqrt((r * r) - (dy * dy))), (cy + dy));
+			do Screen.drawLine(cx - sqrtDist, cy + dy, cx + sqrtDist, cy + dy);
 			let dy = dy + 1;
 		}
 		return;
