@@ -88,63 +88,115 @@ pop that 0
 label IF_END0
 push constant 0
 return
-function Screen.drawLine 9
+function Screen.drawLine 7
 push argument 2
 push argument 0
 sub
-call Math.abs 1
 pop local 0
 push argument 3
 push argument 1
 sub
-call Math.abs 1
 pop local 1
 push argument 0
 push argument 2
+call Math.min 2
+pop local 2
+push argument 1
+push argument 3
+call Math.min 2
+pop local 3
+push local 0
+push constant 0
 lt
+push local 1
+push constant 0
+gt
+and
+push local 0
+push constant 0
+gt
+push local 1
+push constant 0
+lt
+and
+or
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push argument 0
-pop local 2
-push argument 2
-pop local 4
-goto IF_END0
-label IF_FALSE0
-push argument 2
-pop local 2
-push argument 0
-pop local 4
-label IF_END0
-push argument 1
-push argument 3
+push local 1
+push constant 0
 lt
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
+push argument 0
 push argument 1
-pop local 3
-push argument 3
-pop local 5
+push local 0
+push local 1
+call Screen.drawDiagonalLine 4
+pop temp 0
 goto IF_END1
 label IF_FALSE1
+push argument 2
 push argument 3
-pop local 3
-push argument 1
-pop local 5
+push local 0
+neg
+push local 1
+neg
+call Screen.drawDiagonalLine 4
+pop temp 0
 label IF_END1
 push constant 0
+return
+goto IF_END0
+label IF_FALSE0
+push local 0
+call Math.abs 1
+pop local 0
+push local 1
+call Math.abs 1
+pop local 1
+label IF_END0
+push local 1
+push constant 0
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 2
+push local 3
+push local 0
+call Screen.drawVerticalLine 3
+pop temp 0
+push constant 0
+return
+label IF_FALSE2
+push local 0
+push constant 0
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 2
+push local 3
+push local 1
+call Screen.drawHorizontalLine 3
+pop temp 0
+push constant 0
+return
+label IF_FALSE3
+push constant 0
+pop local 4
+push constant 0
+pop local 5
+push constant 0
 pop local 6
-push constant 0
-pop local 7
-push constant 0
-pop local 8
 label WHILE_EXP0
-push local 6
+push local 4
 push local 0
 gt
 not
-push local 7
+push local 5
 push local 1
 gt
 not
@@ -152,195 +204,223 @@ and
 not
 if-goto WHILE_END0
 push local 2
-push local 6
+push local 4
 add
 push local 3
-push local 7
+push local 5
 add
 call Screen.drawPixel 2
 pop temp 0
-push local 8
+push local 6
 push constant 0
 lt
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
-push local 6
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 4
 push constant 1
 add
-pop local 6
-push local 8
+pop local 4
+push local 6
 push local 1
 add
-pop local 8
-goto IF_END2
-label IF_FALSE2
-push local 7
+pop local 6
+goto IF_END4
+label IF_FALSE4
+push local 5
 push constant 1
 add
-pop local 7
-push local 8
+pop local 5
+push local 6
 push local 0
 sub
-pop local 8
-label IF_END2
+pop local 6
+label IF_END4
 goto WHILE_EXP0
 label WHILE_END0
 push constant 0
 return
-function Screen.drawRectangle 7
-push argument 2
-push argument 0
-sub
-call Math.abs 1
+function Screen.drawHorizontalLine 1
+push constant 0
 pop local 0
-push argument 3
-push argument 1
-sub
-call Math.abs 1
-pop local 1
-push argument 0
+label WHILE_EXP0
+push local 0
 push argument 2
+gt
+not
+not
+if-goto WHILE_END0
+push argument 0
+push argument 1
+push local 0
+add
+call Screen.drawPixel 2
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Screen.drawVerticalLine 1
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push argument 2
+gt
+not
+not
+if-goto WHILE_END0
+push argument 0
+push local 0
+add
+push argument 1
+call Screen.drawPixel 2
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Screen.drawDiagonalLine 3
+push constant 0
+pop local 0
+push constant 0
+pop local 1
+push constant 0
+pop local 2
+label WHILE_EXP0
+push local 1
+push argument 2
+gt
+not
+push local 2
+push argument 3
+lt
+not
+and
+not
+if-goto WHILE_END0
+push argument 0
+push local 1
+add
+push argument 1
+push local 2
+add
+call Screen.drawPixel 2
+pop temp 0
+push local 0
+push constant 0
 lt
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push argument 0
+push local 2
+push constant 1
+sub
 pop local 2
+push local 0
 push argument 2
-pop local 4
+add
+pop local 0
 goto IF_END0
 label IF_FALSE0
-push argument 2
-pop local 2
-push argument 0
-pop local 4
-label IF_END0
-push argument 1
-push argument 3
-lt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push argument 1
-pop local 3
-push argument 3
-pop local 5
-goto IF_END1
-label IF_FALSE1
-push argument 3
-pop local 3
-push argument 1
-pop local 5
-label IF_END1
-push constant 0
-pop local 6
-push local 2
-push local 4
-lt
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
-label WHILE_EXP0
-push local 2
-push local 6
-add
-push local 4
-lt
-not
-if-goto WHILE_END0
-push local 2
-push local 6
-add
-push local 3
-push local 4
-push local 5
-call Screen.drawLine 4
-pop temp 0
-push local 6
+push local 1
 push constant 1
-add
-pop local 6
-goto WHILE_EXP0
-label WHILE_END0
-goto IF_END2
-label IF_FALSE2
-label WHILE_EXP1
-push local 3
-push local 6
-add
-push local 5
-lt
-not
-if-goto WHILE_END1
-push local 2
-push local 3
-push local 6
-add
-push local 4
-push local 5
-call Screen.drawLine 4
-pop temp 0
-push local 6
-push constant 1
-add
-pop local 6
-goto WHILE_EXP1
-label WHILE_END1
-label IF_END2
-push constant 0
-return
-function Screen.drawCircle 3
-push argument 1
-push argument 2
-sub
-pop local 0
-push argument 1
-push argument 2
 add
 pop local 1
-push constant 0
-pop local 2
-label WHILE_EXP0
 push local 0
-push local 2
+push argument 3
 add
+pop local 0
+label IF_END0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Screen.drawRectangle 5
+push argument 2
+push argument 0
+sub
+call Math.abs 1
+pop local 0
+push argument 3
+push argument 1
+sub
+call Math.abs 1
+pop local 1
+push argument 0
+push argument 2
+call Math.min 2
+pop local 2
+push argument 1
+push argument 3
+call Math.min 2
+pop local 3
+push constant 0
+pop local 4
+label WHILE_EXP0
+push local 4
 push local 1
 lt
 not
 if-goto WHILE_END0
-push argument 0
-push argument 2
-push argument 2
-call Math.multiply 2
 push local 2
-push local 2
-call Math.multiply 2
-sub
-call Math.sqrt 1
-sub
-push argument 1
-push local 2
+push local 3
+push local 4
 add
-push argument 0
-push argument 2
-push argument 2
-call Math.multiply 2
-push local 2
-push local 2
-call Math.multiply 2
-sub
-call Math.sqrt 1
-add
-push argument 1
-push local 2
-add
-call Screen.drawLine 4
+push local 0
+call Screen.drawVerticalLine 3
 pop temp 0
-push local 2
+push local 4
 push constant 1
 add
-pop local 2
+pop local 4
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Screen.drawCircle 2
+push argument 2
+neg
+pop local 0
+label WHILE_EXP0
+push local 0
+push argument 2
+gt
+not
+not
+if-goto WHILE_END0
+push argument 2
+push argument 2
+call Math.multiply 2
+push local 0
+push local 0
+call Math.multiply 2
+sub
+call Math.sqrt 1
+pop local 1
+push argument 0
+push local 1
+sub
+push argument 1
+push local 0
+add
+push constant 2
+push local 1
+call Math.multiply 2
+call Screen.drawVerticalLine 3
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
 goto WHILE_EXP0
 label WHILE_END0
 push constant 0

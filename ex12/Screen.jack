@@ -59,32 +59,42 @@ class Screen {
     /** Draws a line from (x1, y1) to (x2, y2). */
     function void drawLine(int x1, int y1, int x2, int y2) {
     	var int dx, dy;
-		var int startX, startY, endX, endY;
+		var int startX, startY;
 		var int i, j;
 		var int proportion;
 		
-		let dx = Math.abs(x2 - x1);
-		let dy = Math.abs(y2 - y1);
-		if (x1 < x2) {
-			let startX = x1;
-			let endX = x2;
+		let dx = x2 - x1;
+    	let dy = y2 - y1;
+		let startX = Math.min(x1, x2);
+		let startY = Math.min(y1, y2);
+		
+		// draw diagonal lines
+		if (((dx < 0) & (dy > 0)) | ((dx > 0) & (dy < 0))) {
+    		if (dy < 0) {
+    			do Screen.drawDiagonalLine(x1, y1, dx, dy);
+    		} else {
+    			do Screen.drawDiagonalLine(x2, y2, -dx, -dy);
+    		}
+    		return;
+    	} else {
+    		let dx = Math.abs(dx);
+    		let dy = Math.abs(dy);
+    	}
+		
+		// When dx = 0 or dy = 0, use special functions
+    	if (dy = 0) {
+    		do Screen.drawVerticalLine(startX, startY, dx);
+    		return;
+    	}
+    	if (dx = 0) {
+    		do Screen.drawHorizontalLine(startX, startY, dy);
+    		return;
 		}
-		else {
-			let startX = x2;
-			let endX = x1;
-		}
-		if (y1 < y2) {
-			let startY = y1;
-			let endY = y2;
-		}
-		else {
-			let startY = y2;
-			let endY = y1;
-		}
+		
 		let i = 0;
 		let j = 0;
 		let proportion = 0;
-		while ((i < dx) | (j < dy)) {
+		while (~(i > dx) & ~(j > dy)) {
 			do Screen.drawPixel(startX + i, startY + j);
 			if (proportion < 0) {
 				let i = i + 1;
@@ -98,35 +108,59 @@ class Screen {
 		return;
 	}
 
+	function void drawHorizontalLine(int x, int y, int dy) {
+    	var int i;
+    	let i = 0;
+    	while (~(i > dy)) {
+    		do Screen.drawPixel(x, y + i);
+    		let i = i + 1;
+    	}
+    	return;
+    }
+	
+	function void drawVerticalLine(int x, int y, int dx) {
+    	var int i;
+    	let i = 0;
+    	while (~(i > dx)) {
+   			do Screen.drawPixel(x + i, y);
+   			let i = i + 1;
+    	}
+    	return;
+    }
+	
+	function void drawDiagonalLine(int x, int y, int dx, int dy) {
+       	var int proportion, i, j;
+    	let proportion = 0;
+    	let i = 0;
+    	let j = 0;
+    	while ((~(i > dx)) & (~(j < dy))) {
+    		do Screen.drawPixel(x + i, y + j);
+    		if (proportion < 0) {
+    			let j = j - 1;
+    			let proportion = proportion + dx;
+    		} else {
+    			let i = i + 1;
+    			let proportion = proportion + dy;
+    		}
+    	}
+    	return;    
+    }
+	
     /** Draws a filled rectangle where the top left corner
      *  is (x1, y1) and the bottom right corner is (x2, y2). */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
     	var int dx, dy;
-		var int startX, startY, endX, endY;
+		var int startX, startY;
 		var int i;
 		
 		let dx = Math.abs(x2 - x1);
 		let dy = Math.abs(y2 - y1);
-		if (x1 < x2) {
-			let startX = x1;
-			let endX = x2;
-		}
-		else {
-			let startX = x2;
-			let endX = x1;
-		}
-		if (y1 < y2) {
-			let startY = y1;
-			let endY = y2;
-		}
-		else {
-			let startY = y2;
-			let endY = y1;
-		}
+		let startX = Math.min(x1, x2);
+		let startY = Math.min(y1, y2);
 		
 		let i = 0;
-		while ((startX + i) < endX) {
-			do Screen.drawLine(startX + i, startY, endX, endY); 
+		while (i < dy) {
+			do Screen.drawVerticalLine(startX, startY + i, dx); 
 			let i = i + 1;
 		}
 		return;
@@ -134,13 +168,13 @@ class Screen {
 
     /** Draws a filled circle of radius r around (cx, cy). */
     function void drawCircle(int cx, int cy, int r) {
-    	var int startY, endY;
 		var int dy;
-		let startY = cy - r;
-		let endY = cy + r;
-		let dy = 0;
-		while ((startY + dy) < endY) {
-			do Screen.drawLine((cx - Math.sqrt((r * r) - (dy * dy))), (cy + dy), (cx + Math.sqrt((r * r) - (dy * dy))), (cy + dy));
+		var int sqrtDist;
+		
+		let dy = -r;
+		while (~(dy > r)) {
+			let sqrtDist = Math.sqrt((r * r) - (dy * dy));
+			do Screen.drawVerticalLine(cx - sqrtDist, cy + dy, 2 * sqrtDist);
 			let dy = dy + 1;
 		}
 		return;
